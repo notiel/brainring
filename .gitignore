@@ -1,0 +1,7 @@
+__*
+.*
+build/
+dist/
+*.spec
+*.xlsx
+!/.gitignore
