@@ -4,6 +4,7 @@ from openpyxl import load_workbook
 question_time = 10
 time_low_threshold = 5
 
+
 @dataclass
 class Game:
     categories: List['Category']

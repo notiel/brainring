@@ -4,14 +4,13 @@ import questiondata
 
 
 class QuestionDialog(QtWidgets.QWidget, question.Ui_Form):
-    def __init__(self, category: questiondata.Category):
+    def __init__(self, category: questiondata.Category, number):
         super().__init__()
         self.setupUi(self)
-
-        self.count = 0
-        self.LblPoints.setText("Стоимость вопроса: %i" % category.questions[0].points)
+        self.count: int = 0
+        self.LblPoints.setText("Стоимость вопроса: %i" % category.questions[number].points)
         self.LblCategory.setText("Категория: %s" % category.name)
-        self.LblQuestion.setText("Вопрос № 1")
+        self.LblQuestion.setText("Вопрос № %i" % (number+1))
         self.TxtQuestion.setHtml("<!DOCTYPE HTML PUBLIC \"-//W3C//DTD HTML 4.0//EN\" "
                                  "\"http://www.w3.org/TR/REC-html40/strict.dtd\">\n"
                                  "<html><head><meta name=\"qrichtext\" content=\"1\" /><style type=\"text/css\">\n"
@@ -22,7 +21,7 @@ class QuestionDialog(QtWidgets.QWidget, question.Ui_Form):
                                  " -qt-block-indent:0; text-indent:0px;\">"
                                  "<span style=\" font-family:\'Calibri\'; font-size:30pt; "
                                  "font-weight:600; color:#000000;\">%s</span></p></body></html>"
-                                 % category.questions[0].description)
+                                 % category.questions[number].description)
         self.timer = QtCore.QTimer()
         self.timer.timeout.connect(self.timerEvent)
         self.timer.start(1000)
@@ -38,11 +37,3 @@ class QuestionDialog(QtWidgets.QWidget, question.Ui_Form):
             self.LCDTimer.display(current - 1)
             if current == questiondata.time_low_threshold + 1:
                 self.LCDTimer.setStyleSheet("color: red")
-
-# def open_question(category: questiondata.Category):
-#     """
-#     shows current question window
-#     :return:
-#     """
-#     question_window = QuestionDialog(category)
-#     question_window.show()

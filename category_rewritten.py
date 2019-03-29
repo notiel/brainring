@@ -2,7 +2,7 @@ from PyQt5 import QtCore, QtGui, QtWidgets
 from typing import Tuple, List
 from math import sqrt
 import questiondata
-import question_opened
+import stub_opened
 
 
 class CategoryForm(QtWidgets.QWidget):
@@ -12,8 +12,8 @@ class CategoryForm(QtWidgets.QWidget):
     def __init__(self, game: questiondata.Game):
         super().__init__()
         self.game: questiondata.Game = game
-        self.question = None
-        # self.main_window = main_window
+        # self.question = None
+        self.stub = None
         self.buttons: List[QtWidgets.QPushButton] = list()
         self.setupUi()
 
@@ -54,8 +54,9 @@ class CategoryForm(QtWidgets.QWidget):
         btn.setEnabled(False)
         btn.setStyleSheet("color: gray; background-color: rgb(221, 219, 255)")
         self.category_signal.emit(btn.text())
-        self.question = question_opened.QuestionDialog(self.game.get_category_by_name(btn.text()))
-        self.question.show()
+        self.stub = stub_opened.StubForm(self.game.get_category_by_name(btn.text()))
+        self.stub.show()
+        self.setVisible(False)
 
 
 def get_size_data(total: int) -> Tuple[int, int]:
@@ -70,8 +71,8 @@ def get_size_data(total: int) -> Tuple[int, int]:
         return root, root
     elif total % (root + 1) == 0:
         return root + 1, int(total/(root + 1))
-    elif total % (root + 2) == 0:
-        return root + 1, int(total/(root + 1))
+    # elif total % (root + 2) == 0:
+    #     return root + 1, int(total/(root + 1))
     else:
         return root, int(total/root + 1)
 

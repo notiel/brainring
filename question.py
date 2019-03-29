@@ -30,6 +30,7 @@ class Ui_Form(object):
         self.LCDTimer.setStyleSheet("color:blue;")
         self.LCDTimer.setDigitCount(3)
         self.LCDTimer.setProperty("value", 100.0)
+        self.LCDTimer.setProperty("intValue", 100)
         self.LCDTimer.setObjectName("LCDTimer")
         self.gridLayout.addWidget(self.LCDTimer, 0, 1, 3, 1)
         self.LblQuestion = QtWidgets.QLabel(Form)
@@ -41,6 +42,13 @@ class Ui_Form(object):
         self.TxtQuestion = QtWidgets.QTextBrowser(Form)
         self.TxtQuestion.setObjectName("TxtQuestion")
         self.gridLayout.addWidget(self.TxtQuestion, 3, 0, 1, 2)
+        self.BtnAnswer = QtWidgets.QPushButton(Form)
+        self.BtnAnswer.setMinimumSize(QtCore.QSize(0, 50))
+        font = QtGui.QFont()
+        font.setPointSize(20)
+        self.BtnAnswer.setFont(font)
+        self.BtnAnswer.setObjectName("BtnAnswer")
+        self.gridLayout.addWidget(self.BtnAnswer, 4, 0, 1, 2)
 
         self.retranslateUi(Form)
         QtCore.QMetaObject.connectSlotsByName(Form)
@@ -56,4 +64,5 @@ class Ui_Form(object):
 "p, li { white-space: pre-wrap; }\n"
 "</style></head><body style=\" font-family:\'MS Shell Dlg 2\'; font-size:7.8pt; font-weight:400; font-style:normal;\">\n"
 "<p style=\" margin-top:0px; margin-bottom:0px; margin-left:0px; margin-right:0px; -qt-block-indent:0; text-indent:0px;\"><span style=\" font-family:\'Calibri\'; font-size:30pt; font-weight:600; color:#000000;\">В архипелаге Норденшельда есть острова Тугут, Корсар и Грозный, названные так экспедицией Толя. Там же есть остров Матрос, имя которому дал экипаж судна «Норд» в честь своего друга. На Таймыре мы можем увидеть гору Верти и мыс Дика.Кем же были те, в чью честь названы эти объекты?»</span></p></body></html>"))
+        self.BtnAnswer.setText(_translate("Form", "Отвечает команда..."))
 

@@ -1,11 +1,11 @@
-import dataclasses
+from dataclasses import *
+
 
 @dataclass
 class Command:
     name: str = "Команда"
     questions: int = 0
     points: int = 0
-
 
     def __init__(self, name: str):
         self.name = name

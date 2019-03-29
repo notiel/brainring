@@ -56,6 +56,7 @@ class TestSize(unittest.TestCase):
         x, y = category_rewritten.get_size_data(21)
         self.assertEqual([x, y], [5, 5])
 
+
 """class TestButtons(unittest.TestCase):
 
     def test_BtnCreation(self):
