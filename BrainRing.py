@@ -83,6 +83,8 @@ class GameState(QtWidgets.QWidget):
         if state == States.CAT_SELECTED:
             self.time = False
             self.question = -1
+        if state == States.TIMER_ENDED:
+            self.time = False
         self.state_signal.emit()
 
     def next_question(self):
@@ -112,6 +114,7 @@ class BrainRing(QtWidgets.QMainWindow, designmain.Ui_MainWindow):
         self.BtnNew.clicked.connect(self.NewQuestion)
         self.BtnNext.clicked.connect(self.NewQuestion)
         self.BtnEnd.clicked.connect(self.NewCategory)
+        self.BtnTimer.clicked.connect(self.TimerPressed)
 
     def OpenPressed(self):
         openfilename = QtWidgets.QFileDialog.getOpenFileName(self, 'Выберите игру', "")[0]
@@ -136,6 +139,8 @@ class BrainRing(QtWidgets.QMainWindow, designmain.Ui_MainWindow):
             self.SetStateCategory()
         if self.state.state == States.QUEST_SELECTED:
             self.SetStateQuestion()
+        if self.state.state == States.TIMER_ENDED:
+            self.SetStateTimeEnded()
 
     def CategorySelected(self,  category):
         """
@@ -145,8 +150,6 @@ class BrainRing(QtWidgets.QMainWindow, designmain.Ui_MainWindow):
         """
         category = self.game.get_category_by_name(category)
         self.state.set_category(category)
-
-
 
     def NewQuestion(self):
         """
@@ -182,7 +185,19 @@ class BrainRing(QtWidgets.QMainWindow, designmain.Ui_MainWindow):
                 if current == questiondata.time_low_threshold + 1:
                     self.Timer.setStyleSheet("color: red")
             else:
-                self.SetStateTimeEnded()
+                self.state.set_state(States.TIMER_ENDED)
+
+    def TimerPressed(self):
+        """
+        starts and stops timer at any moment
+        :return:
+        """
+        if self.state.time:
+            self.state.time = False
+            self.BtnTimer.setText('Старт')
+        else:
+            self.state.time = True
+            self.BtnTimer.setText('Стоп')
 
     def SetStateCategory(self):
         """
@@ -216,6 +231,7 @@ class BrainRing(QtWidgets.QMainWindow, designmain.Ui_MainWindow):
         self.BtnFalse.setEnabled(False)
         self.BtnNext.setEnabled(False)
         self.BtnTimer.setEnabled(True)
+        self.BtnTimer.setText('Стоп')
 
         self.LblDscr.setText("%s: Вопрос № %i из %i. Стоимость %i " %
                              (category.name, self.state.question+1, len(category.questions),
@@ -249,14 +265,12 @@ class BrainRing(QtWidgets.QMainWindow, designmain.Ui_MainWindow):
         sets controls state for end of time
         :return:
         """
-        # self.Timer.setStyleSheet("color:gray")
-        # self.time = False
         self.BtnTrue.setEnabled(False)
         self.BtnFalse.setEnabled(False)
         self.BtnFinish.setEnabled(True)
         self.BtnNew.setEnabled(True)
         self.BtnNext.setEnabled(False)
-        self.BtnTimer.setEnabled(True)
+        self.BtnTimer.setEnabled(False)
 
     def closeEvent(self, event):
         if self.category_form:
