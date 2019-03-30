@@ -1,5 +1,5 @@
 import questiondata
-import category_rewritten
+import category
 import unittest
 
 
@@ -45,15 +45,15 @@ class TestGameOpened(unittest.TestCase):
 class TestSize(unittest.TestCase):
 
     def test_SizeFor36(self):
-        x, y = category_rewritten.get_size_data(36)
+        x, y = category.get_size_data(36)
         self.assertEqual([x, y], [6, 6])
 
     def test_SizeFor35(self):
-        x, y = category_rewritten.get_size_data(35)
+        x, y = category.get_size_data(35)
         self.assertEqual([x, y], [7, 5])
 
     def test_SizeFor21(self):
-        x, y = category_rewritten.get_size_data(21)
+        x, y = category.get_size_data(21)
         self.assertEqual([x, y], [5, 5])
 
 

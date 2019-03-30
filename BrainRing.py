@@ -1,6 +1,7 @@
 import questiondata
-import category_rewritten
+import category
 import question_opened
+import settings
 import designmain
 import sys
 import os
@@ -100,9 +101,9 @@ class BrainRing(QtWidgets.QMainWindow, designmain.Ui_MainWindow):
     def __init__(self):
         super().__init__()
         self.setupUi(self)
-        self.Open.setShortcut('Ctrl+O')
         self.game = None
         self.category_form = None
+        self.settings_form = None
         self.state: GameState = GameState()
         self.state.state_signal.connect(self.StateChanged)
 
@@ -110,7 +111,10 @@ class BrainRing(QtWidgets.QMainWindow, designmain.Ui_MainWindow):
         self.timer.timeout.connect(self.TimerEvent)
         self.timer.start(1000)
 
+        self.Open.setShortcut('Ctrl+O')
         self.Open.triggered.connect(self.OpenPressed)
+        self.Settings_2.setShortcut('Ctrl+S')
+        self.Settings_2.triggered.connect(self.SettingsPressed)
         self.BtnNew.clicked.connect(self.NewQuestion)
         self.BtnNext.clicked.connect(self.NewQuestion)
         self.BtnEnd.clicked.connect(self.NewCategory)
@@ -124,7 +128,7 @@ class BrainRing(QtWidgets.QMainWindow, designmain.Ui_MainWindow):
                 if error:
                     ErrorMessage(error)
                 self.state.set_game(self.game)
-                self.category_form = category_rewritten.CategoryForm(self.game)
+                self.category_form = category.CategoryForm(self.game)
                 self.category_form.category_signal[str].connect(self.CategorySelected)
                 self.category_form.show()
         else:
@@ -278,6 +282,10 @@ class BrainRing(QtWidgets.QMainWindow, designmain.Ui_MainWindow):
                 self.category_form.question.close()
             self.category_form.close()
         event.accept()
+
+    def SettingsPressed(self):
+        self.settings_form = settings.Settings()
+        self.settings_form.show()
 
 
 def ErrorMessage(text):

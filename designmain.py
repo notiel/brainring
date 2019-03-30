@@ -138,6 +138,7 @@ class Ui_MainWindow(object):
         self.gridLayout.addWidget(self.LblTmr, 5, 2, 1, 1)
         self.TxtQstn = QtWidgets.QTextBrowser(self.centralwidget)
         self.TxtQstn.setMinimumSize(QtCore.QSize(700, 150))
+        self.TxtQstn.setMaximumSize(QtCore.QSize(755, 16777215))
         self.TxtQstn.setObjectName("TxtQstn")
         self.gridLayout.addWidget(self.TxtQstn, 3, 0, 1, 3)
         MainWindow.setCentralWidget(self.centralwidget)
