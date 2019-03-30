@@ -1,8 +1,9 @@
 import questiondata
 import category
 import question_opened
-import settings
+import commanddata
 import designmain
+import settings
 import sys
 import os
 from loguru import logger
@@ -104,6 +105,7 @@ class BrainRing(QtWidgets.QMainWindow, designmain.Ui_MainWindow):
         self.game = None
         self.category_form = None
         self.settings_form = None
+        self.command = commanddata.Commands()
         self.state: GameState = GameState()
         self.state.state_signal.connect(self.StateChanged)
 
@@ -284,7 +286,7 @@ class BrainRing(QtWidgets.QMainWindow, designmain.Ui_MainWindow):
         event.accept()
 
     def SettingsPressed(self):
-        self.settings_form = settings.Settings()
+        self.settings_form = settings.Settings(self.command)
         self.settings_form.show()
 
 

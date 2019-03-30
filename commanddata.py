@@ -1,9 +1,25 @@
 from dataclasses import *
+available_commands = 4
+max_commands = 16
 
+
+class Commands:
+
+    def __init__(self):
+        self.commands = list()
+
+        for i in range(max_commands):
+            command = Command(name='Команда %i' % i)
+            self.commands.append(command)
+            command.button_id = 1
+        for i in range(available_commands):
+            self.commands[i].available = True
 
 @dataclass
 class Command:
+    button_id: int
     name: str = "Команда"
+    available: bool = False
     questions: int = 0
     points: int = 0
 

@@ -1,12 +1,14 @@
 import settings_ui
+import commanddata
 from PyQt5 import QtWidgets
 
 
 class Settings(QtWidgets.QWidget, settings_ui.Ui_Settings):
 
-    def __init__(self):
+    def __init__(self, commands):
         super().__init__()
         self.setupUi(self)
+        self.commanddata:commanddata.Commands = commands
         self.checklist = [self.CB1, self.CB2, self.CB3, self.CB4, self.CB5, self.CB6, self.CB7, self.CB8, self.CB9,
                           self.CB10, self.CB11, self.CB11, self.CB12, self.CB13, self.CB14, self.CB15, self.CB16]
         self.btnlist = [self.Btn1, self.Btn2, self.Btn3, self.Btn4, self.Btn5, self.Btn6, self.Btn7, self.Btn8,
@@ -33,7 +35,10 @@ class Settings(QtWidgets.QWidget, settings_ui.Ui_Settings):
         if CB.isChecked():
             self.btnlist[i].setEnabled(True)
             self.CBlist[i].setEnabled(True)
+            self.commanddata.commands[i].available = True
         else:
             self.btnlist[i].setEnabled(False)
             self.CBlist[i].setEnabled(False)
+            self.commanddata.commands[i].available = False
+
 
