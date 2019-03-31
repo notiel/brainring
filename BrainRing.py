@@ -105,7 +105,7 @@ class BrainRing(QtWidgets.QMainWindow, designmain.Ui_MainWindow):
         self.game = None
         self.category_form = None
         self.settings_form = None
-        self.command = commanddata.Commands()
+        self.commands = commanddata.Commands()
         self.state: GameState = GameState()
         self.state.state_signal.connect(self.StateChanged)
 
@@ -121,6 +121,9 @@ class BrainRing(QtWidgets.QMainWindow, designmain.Ui_MainWindow):
         self.BtnNext.clicked.connect(self.NewQuestion)
         self.BtnEnd.clicked.connect(self.NewCategory)
         self.BtnTimer.clicked.connect(self.TimerPressed)
+
+        self.model = commanddata.CommandTableModel(self.commands)
+        self.TblCmnd.setModel(self.model)
 
     def OpenPressed(self):
         openfilename = QtWidgets.QFileDialog.getOpenFileName(self, 'Выберите игру', "")[0]
@@ -286,7 +289,7 @@ class BrainRing(QtWidgets.QMainWindow, designmain.Ui_MainWindow):
         event.accept()
 
     def SettingsPressed(self):
-        self.settings_form = settings.Settings(self.command)
+        self.settings_form = settings.Settings(self.commands)
         self.settings_form.show()
 
 
