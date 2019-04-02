@@ -105,7 +105,6 @@ class BrainRing(QtWidgets.QMainWindow, designmain.Ui_MainWindow):
         self.game = None
         self.category_form = None
         self.settings_form = None
-        self.commands = commanddata.Commands()
         self.state: GameState = GameState()
         self.state.state_signal.connect(self.StateChanged)
 
@@ -122,7 +121,7 @@ class BrainRing(QtWidgets.QMainWindow, designmain.Ui_MainWindow):
         self.BtnEnd.clicked.connect(self.NewCategory)
         self.BtnTimer.clicked.connect(self.TimerPressed)
 
-        self.model = commanddata.CommandTableModel(self.commands)
+        self.model = commanddata.CommandTableModel()
         self.TblCmnd.setModel(self.model)
 
     def OpenPressed(self):
@@ -289,9 +288,8 @@ class BrainRing(QtWidgets.QMainWindow, designmain.Ui_MainWindow):
         event.accept()
 
     def SettingsPressed(self):
-        self.settings_form = settings.Settings(self.commands)
+        self.settings_form = settings.Settings(self.model)
         self.settings_form.show()
-
 
 def ErrorMessage(text):
     """

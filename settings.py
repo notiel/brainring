@@ -7,12 +7,12 @@ from typing import List
 
 class Settings(QtWidgets.QWidget, settings_ui.Ui_Settings):
 
-    def __init__(self, commands):
+    def __init__(self, commandmodel):
         super().__init__()
         self.setupUi(self)
         self.SpinBefore.setValue(questiondata.time_low_threshold)
         self.SpinLength.setValue(questiondata.question_time)
-        self.commanddata: commanddata.Commands = commands
+        self.commanddata: commanddata.CommandTableModel = commandmodel
         self.checklist: List[QtWidgets.QCheckBox] = [self.CB1, self.CB2, self.CB3, self.CB4, self.CB5, self.CB6,
                                                      self.CB7, self.CB8, self.CB9, self.CB10, self.CB11, self.CB11,
                                                      self.CB12, self.CB13, self.CB14, self.CB15, self.CB16]
@@ -46,7 +46,10 @@ class Settings(QtWidgets.QWidget, settings_ui.Ui_Settings):
         status: bool = CB.isChecked()
         self.btnlist[i].setEnabled(status)
         self.CBlist[i].setEnabled(status)
-        self.commanddata.commands[i].available = status
+        if status:
+            self.commanddata.enable_command(i)
+        else:
+            self.commanddata.disable_command(i)
 
     def ButtonSelected(self):
         """
@@ -55,7 +58,8 @@ class Settings(QtWidgets.QWidget, settings_ui.Ui_Settings):
         """
         sender: QtWidgets.QComboBox = self.sender()
         current: str = sender.currentText()
-        self.commanddata.commands[self.CBlist.index(sender)].button_id = int(current.replace("Кнопка ", ""))
+        self.commanddata.data()
+        self.commanddata.commands.update_button_id(self.CBlist.index(sender), int(current.replace("Кнопка ", "")))
         # find absent button and set duplicate to absent
         current_labels: List[str] = [CB.currentText() for CB in self.CBlist]
         set_current = set(current_labels)
@@ -64,7 +68,7 @@ class Settings(QtWidgets.QWidget, settings_ui.Ui_Settings):
             for CB in self.CBlist:
                 if CB != sender and CB.currentText() == current:
                     CB.setCurrentText(absent)
-                    self.commanddata.commands[self.CBlist.index(CB)].button_id = int(absent.replace("Кнопка ", ""))
+                    self.commanddata.commands.update_button_id(self.CBlist.index(CB), int(absent.replace("Кнопка ", "")))
 
     def QuestionTimeChanged(self):
         """

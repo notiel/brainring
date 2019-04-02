@@ -12,6 +12,15 @@ class Commands:
         for i in range(available_commands):
             self.commands[i].available = True
 
+    def update_button_id(self, command_number: int, new_button: int):
+        """
+        sets new button for selected command
+        :param new_button: new button number
+        :param command_number: number of command to update
+        :return:
+        """
+        self.commands[command_number].button_id = new_button
+
 
 @dataclass
 class Command:
@@ -32,9 +41,9 @@ class Command:
 
 
 class CommandTableModel(QAbstractTableModel):
-    def __init__(self, commanddata: Commands, parent=None):
+    def __init__(self, parent=None):
         super(CommandTableModel, self).__init__(parent)
-        self.data = commanddata
+        self.commanddata = Commands()
 
     def rowCount(self, parent=None, *args, **kwargs):
         """
@@ -44,7 +53,7 @@ class CommandTableModel(QAbstractTableModel):
         :param kwargs: necessary field
         :return: number of commands available
         """
-        return sum(1 for command in self.data.commands if command.available)
+        return sum(1 for command in self.commanddata.commands if command.available)
 
     def columnCount(self, parent=None, *args, **kwargs):
         """
@@ -68,11 +77,11 @@ class CommandTableModel(QAbstractTableModel):
             x: int = idx.row()
             y: int = idx.column()
             if y == 0:
-                return self.data.commands[x].name
+                return self.commanddata.commands[x].name
             if y == 1:
-                return self.data.commands[x].questions
+                return self.commanddata.commands[x].questions
             if y == 2:
-                return self.data.commands[x].points
+                return self.commanddata.commands[x].points
         return QVariant()
 
     def headerData(self, section, qt_orientation, role=None):
@@ -85,3 +94,23 @@ class CommandTableModel(QAbstractTableModel):
         """
         if role == Qt.DisplayRole and qt_orientation == Qt.Horizontal:
             return headers[section]
+
+    def enable_command(self, command_id: int):
+        """
+        :param command_id: number of available comand
+        makes one more command available, model reloaded
+        :return:
+        """
+        self.beginInsertRows(QModelIndex(), 0, 0)
+        self.commanddata.commands[command_id].available = True
+        self.endInsertRows()
+
+    def disable_command(self, command_id: int):
+        """
+        :param command_id: number of available comand
+        makes one more command available, model reloaded
+        :return:
+        """
+        self.beginRemoveRows(QModelIndex(), 0, 0)
+        self.commanddata.commands[command_id].available = False
+        self.endRemoveRows()
