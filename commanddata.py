@@ -76,12 +76,13 @@ class CommandTableModel(QAbstractTableModel):
         if role == Qt.DisplayRole:
             x: int = idx.row()
             y: int = idx.column()
+            commands_in_game = [command for command in self.commanddata.commands if command.available]
             if y == 0:
-                return self.commanddata.commands[x].name
+                return commands_in_game[x].name
             if y == 1:
-                return self.commanddata.commands[x].questions
+                return commands_in_game[x].questions
             if y == 2:
-                return self.commanddata.commands[x].points
+                return commands_in_game[x].points
         return QVariant()
 
     def headerData(self, section, qt_orientation, role=None):
