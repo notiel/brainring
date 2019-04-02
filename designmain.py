@@ -11,7 +11,7 @@ from PyQt5 import QtCore, QtGui, QtWidgets
 class Ui_MainWindow(object):
     def setupUi(self, MainWindow):
         MainWindow.setObjectName("MainWindow")
-        MainWindow.resize(1281, 852)
+        MainWindow.resize(1281, 922)
         self.centralwidget = QtWidgets.QWidget(MainWindow)
         self.centralwidget.setObjectName("centralwidget")
         self.gridLayout = QtWidgets.QGridLayout(self.centralwidget)
@@ -38,8 +38,8 @@ class Ui_MainWindow(object):
         self.BtnTimer.setObjectName("BtnTimer")
         self.gridLayout.addWidget(self.BtnTimer, 7, 3, 1, 1)
         self.TblCmnd = QtWidgets.QTableView(self.centralwidget)
-        self.TblCmnd.setMinimumSize(QtCore.QSize(0, 555))
-        self.TblCmnd.setMaximumSize(QtCore.QSize(16777215, 560))
+        self.TblCmnd.setMinimumSize(QtCore.QSize(0, 620))
+        self.TblCmnd.setMaximumSize(QtCore.QSize(16777215, 620))
         self.TblCmnd.setFrameShape(QtWidgets.QFrame.StyledPanel)
         self.TblCmnd.setFrameShadow(QtWidgets.QFrame.Sunken)
         self.TblCmnd.setLineWidth(2)
