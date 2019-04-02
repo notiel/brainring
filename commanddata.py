@@ -3,12 +3,12 @@ from PyQt5.QtCore import QAbstractTableModel, Qt, QModelIndex, QVariant
 
 available_commands = 4
 max_commands = 16
-headers = {0: 'Имя команды', 1: 'Число вопросов', 2: 'Общий счет'}
+headers = ["Команда", "Вопросы", "Очки", "Номер кнопки"]
 
 
 class Commands:
     def __init__(self):
-        self.commands = [Command(button_id=i, name='Команда %i' % (i+1)) for i in range(max_commands)]
+        self.commands = [Command(button_id=i, name='Команда %i' % i) for i in range(1, max_commands+1)]
         for i in range(available_commands):
             self.commands[i].available = True
 
@@ -52,9 +52,9 @@ class CommandTableModel(QAbstractTableModel):
         :param parent: necessary field
         :param args: necessary field
         :param kwargs: necessary field
-        :return: we have three data columns
+        :return: we have four data columns
         """
-        return 3
+        return 4
 
     def data(self, idx=QModelIndex(), role=None):
         """
@@ -74,6 +74,8 @@ class CommandTableModel(QAbstractTableModel):
                 return commands_in_game[x].questions
             if y == 2:
                 return commands_in_game[x].points
+            if y == 3:
+                return commands_in_game[x].button_id
         return QVariant()
 
     def headerData(self, section, qt_orientation, role=None):
