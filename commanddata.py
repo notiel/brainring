@@ -12,15 +12,6 @@ class Commands:
         for i in range(available_commands):
             self.commands[i].available = True
 
-    def update_button_id(self, command_number: int, new_button: int):
-        """
-        sets new button for selected command
-        :param new_button: new button number
-        :param command_number: number of command to update
-        :return:
-        """
-        self.commands[command_number].button_id = new_button
-
 
 @dataclass
 class Command:
@@ -108,10 +99,19 @@ class CommandTableModel(QAbstractTableModel):
 
     def disable_command(self, command_id: int):
         """
-        :param command_id: number of available comand
+        :param command_id: number of available command
         makes one more command available, model reloaded
         :return:
         """
         self.beginRemoveRows(QModelIndex(), 0, 0)
         self.commanddata.commands[command_id].available = False
         self.endRemoveRows()
+
+    def update_button_id(self, command_number: int, new_button: int):
+        """
+        sets new button for selected command
+        :param new_button: new button number
+        :param command_number: number of command to update
+        :return:
+        """
+        self.commanddata.commands[command_number].button_id = new_button

@@ -58,8 +58,8 @@ class Settings(QtWidgets.QWidget, settings_ui.Ui_Settings):
         """
         sender: QtWidgets.QComboBox = self.sender()
         current: str = sender.currentText()
-        self.commanddata.data()
-        self.commanddata.commands.update_button_id(self.CBlist.index(sender), int(current.replace("Кнопка ", "")))
+        # self.commanddata.data()
+        self.commanddata.update_button_id(self.CBlist.index(sender), int(current.replace("Кнопка ", "")))
         # find absent button and set duplicate to absent
         current_labels: List[str] = [CB.currentText() for CB in self.CBlist]
         set_current = set(current_labels)
@@ -68,7 +68,7 @@ class Settings(QtWidgets.QWidget, settings_ui.Ui_Settings):
             for CB in self.CBlist:
                 if CB != sender and CB.currentText() == current:
                     CB.setCurrentText(absent)
-                    self.commanddata.commands.update_button_id(self.CBlist.index(CB), int(absent.replace("Кнопка ", "")))
+                    self.commanddata.update_button_id(self.CBlist.index(CB), int(absent.replace("Кнопка ", "")))
 
     def QuestionTimeChanged(self):
         """
