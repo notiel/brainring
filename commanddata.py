@@ -117,3 +117,5 @@ class CommandTableModel(QAbstractTableModel):
         :return:
         """
         self.commanddata.commands[command_number].button_id = new_button
+        self.dataChanged.emit(QModelIndex(), QModelIndex())
+
