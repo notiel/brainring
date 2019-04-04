@@ -75,9 +75,11 @@ def create_game(filename: str) -> Tuple[Optional[Game], str]:
             category = sheet['A%i' % i].value
             number = int(sheet['B%i' % i].value)
             points = int(sheet['C%i' % i].value)
-            text = sheet['D%i' % i].value
-            answer = sheet['E%i' % i].value
-            question = Question(category=category, description=text, points=points, number=number, answer=answer)
+            text = sheet['D%i' % i].value if sheet['D%i' % i].value else ""
+            filepath = sheet['E%i' % i].value if sheet['E%i' % i].value else ""
+            answer = sheet['F%i' % i].value
+            question = Question(category=category, description=text, points=points, number=number, answer=answer,
+                                filepath=filepath)
             existing_category = game.get_category_by_name(category)
             if existing_category:
                 existing_category.questions.append(question)
@@ -86,6 +88,6 @@ def create_game(filename: str) -> Tuple[Optional[Game], str]:
                 game.categories.append(new_category)
                 game.length += 1
 
-        except (AttributeError, TypeError):
+        except (AttributeError, TypeError, ValueError):
             error += "Wrong %i row\n" % i
     return game, error

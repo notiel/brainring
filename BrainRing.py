@@ -258,6 +258,8 @@ class BrainRing(QtWidgets.QMainWindow, designmain.Ui_MainWindow):
         self.LblAnswer.setText(category.questions[self.state.question].answer)
         self.category_form.question = question_opened.QuestionDialog(category, self.state.question)
         self.category_form.question.show()
+        if self.category_form.question.image:
+            self.category_form.question.image.show()
 
     def SetStateAnswer(self):
         # self.time = False
