@@ -30,7 +30,7 @@ class QuestionDialog(QtWidgets.QWidget, question.Ui_Form):
         self.LCDTimer.display(questiondata.question_time)
         self.image = None
         filepath: str = current_question.filepath.lower()
-        if os.path.exists(filepath) and  (filepath.endswith(".jpg") or filepath.endswith('.png')):
+        if os.path.exists(filepath) and (filepath.endswith(".jpg") or filepath.endswith('.png')):
             self.image = ImageShow(filepath)
         else:
             error = QtWidgets.QMessageBox()
@@ -56,7 +56,6 @@ class QuestionDialog(QtWidgets.QWidget, question.Ui_Form):
             self.LCDTimer.display(current - 1)
             if current == questiondata.time_low_threshold + 1:
                 self.LCDTimer.setStyleSheet("color: red")
-
 
 
 class ImageShow(QtWidgets.QWidget):

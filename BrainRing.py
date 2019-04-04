@@ -150,14 +150,14 @@ class BrainRing(QtWidgets.QMainWindow, designmain.Ui_MainWindow):
         if self.state.state == States.TIMER_ENDED:
             self.SetStateTimeEnded()
 
-    def CategorySelected(self,  category):
+    def CategorySelected(self,  category_passed):
         """
         changes game state
         :param category: category name
         :return:
         """
-        category = self.game.get_category_by_name(category)
-        self.state.set_category(category)
+        actual_category: questiondata.Category = self.game.get_category_by_name(category_passed)
+        self.state.set_category(actual_category)
 
     def NewQuestion(self):
         """
@@ -230,7 +230,7 @@ class BrainRing(QtWidgets.QMainWindow, designmain.Ui_MainWindow):
         self.Timer.display(questiondata.question_time)
         self.Timer.setStyleSheet('color: blue')
         self.BtnEnd.setEnabled(True)
-        category: questiondata.Category = self.state.category
+        actual_category: questiondata.Category = self.state.category
         if self.state.question == len(self.state.category.questions) - 1:
             self.BtnNew.setEnabled(False)
         else:
@@ -242,8 +242,8 @@ class BrainRing(QtWidgets.QMainWindow, designmain.Ui_MainWindow):
         self.BtnTimer.setText('Стоп')
 
         self.LblDscr.setText("%s: Вопрос № %i из %i. Стоимость %i " %
-                             (category.name, self.state.question+1, len(category.questions),
-                              category.questions[self.state.question].points))
+                             (actual_category.name, self.state.question+1, len(actual_category.questions),
+                              actual_category.questions[self.state.question].points))
         self.TxtQstn.setHtml("<!DOCTYPE HTML PUBLIC \"-//W3C//DTD HTML 4.0//EN\" "
                              "\"http://www.w3.org/TR/REC-html40/strict.dtd\">\n"
                              "<html><head><meta name=\"qrichtext\" content=\"1\" /><style type=\"text/css\">\n"
@@ -254,9 +254,9 @@ class BrainRing(QtWidgets.QMainWindow, designmain.Ui_MainWindow):
                              " -qt-block-indent:0; text-indent:0px;\">"
                              "<span style=\" font-family:\'Calibri\'; font-size:20pt; "
                              "font-weight:600; color:#000000;\">%s</span></p></body></html>"
-                             % category.questions[self.state.question].description)
-        self.LblAnswer.setText(category.questions[self.state.question].answer)
-        self.category_form.question = question_opened.QuestionDialog(category, self.state.question)
+                             % actual_category.questions[self.state.question].description)
+        self.LblAnswer.setText(actual_category.questions[self.state.question].answer)
+        self.category_form.question = question_opened.QuestionDialog(actual_category, self.state.question)
         self.category_form.question.show()
         if self.category_form.question.image:
             self.category_form.question.image.show()
@@ -292,6 +292,7 @@ class BrainRing(QtWidgets.QMainWindow, designmain.Ui_MainWindow):
     def SettingsPressed(self):
         self.settings_form = settings.Settings(self.model)
         self.settings_form.show()
+
 
 def ErrorMessage(text):
     """

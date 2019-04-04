@@ -30,7 +30,7 @@ class Settings(QtWidgets.QWidget, settings_ui.Ui_Settings):
         for CB in self.checklist:
             CB.stateChanged.connect(self.CommandActivated)
         for CB in self.CBlist:
-            caption:str = "Кнопка %i" % (self.CBlist.index(CB) + 1)
+            caption: str = "Кнопка %i" % (self.CBlist.index(CB) + 1)
             CB.setCurrentText(caption)
             self.CBlabels.append(caption)
             CB.currentTextChanged.connect(self.ButtonSelected)
