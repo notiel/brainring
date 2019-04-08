@@ -12,6 +12,7 @@ class Settings(QtWidgets.QWidget, settings_ui.Ui_Settings):
         self.setupUi(self)
         self.SpinBefore.setValue(questiondata.time_low_threshold)
         self.SpinLength.setValue(questiondata.question_time)
+        self.scanning = False
         self.commanddata: commanddata.CommandTableModel = commandmodel
         self.checklist: List[QtWidgets.QCheckBox] = [self.CB1, self.CB2, self.CB3, self.CB4, self.CB5, self.CB6,
                                                      self.CB7, self.CB8, self.CB9, self.CB10, self.CB11, self.CB12,

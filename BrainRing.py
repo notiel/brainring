@@ -122,6 +122,7 @@ class BrainRing(QtWidgets.QMainWindow, designmain.Ui_MainWindow):
         self.BtnNext.clicked.connect(self.NewQuestion)
         self.BtnEnd.clicked.connect(self.NewCategory)
         self.BtnTimer.clicked.connect(self.TimerPressed)
+        self.BtnTest.clicked.connect(self.BtnTestPressed)
 
         self.model = commanddata.CommandTableModel()
         self.TblCmnd.setModel(self.model)
@@ -283,6 +284,19 @@ class BrainRing(QtWidgets.QMainWindow, designmain.Ui_MainWindow):
         self.BtnNew.setEnabled(True)
         self.BtnNext.setEnabled(False)
         self.BtnTimer.setEnabled(False)
+        
+    def BtnTestPressed(self):
+        """
+        rescan ports and shows pressed buttons for all command
+        :return:
+        """
+        self.port = self.ScanPorts()
+        if self.port:
+            # will be done later
+            pass
+        else:
+            ErrorMessage("Нет связи с кнопками")
+
 
     def closeEvent(self, event):
         if self.category_form:
@@ -295,16 +309,18 @@ class BrainRing(QtWidgets.QMainWindow, designmain.Ui_MainWindow):
         self.settings_form = settings.Settings(self.model)
         self.settings_form.show()
 
-    def ScanPorts(self):
+    def ScanPorts(self) -> Optional[str]:
         """
         returns comport with our radiodevice and updates statusbar
         :return: comport as "COMX" or None
         """
         radioport = usbhost.scan_ports()
         if radioport:
-            self.statusbar.showMessage("Usb2Rardo at port %s is available" % radioport)
+            self.statusbar.showMessage("Usb2Radio at port %s is available" % radioport)
+            return radioport
         else:
             self.statusbar.showMessage("USB2Radio not found")
+            return None
 
 def ErrorMessage(text):
     """
