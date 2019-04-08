@@ -4,6 +4,7 @@ import question_opened
 import commanddata
 import designmain
 import settings
+import usbhost
 import sys
 import os
 from loguru import logger
@@ -105,6 +106,7 @@ class BrainRing(QtWidgets.QMainWindow, designmain.Ui_MainWindow):
         self.game = None
         self.category_form = None
         self.settings_form = None
+        self.port = self.ScanPorts()
         self.state: GameState = GameState()
         self.state.state_signal.connect(self.StateChanged)
 
@@ -293,6 +295,16 @@ class BrainRing(QtWidgets.QMainWindow, designmain.Ui_MainWindow):
         self.settings_form = settings.Settings(self.model)
         self.settings_form.show()
 
+    def ScanPorts(self):
+        """
+        returns comport with our radiodevice and updates statusbar
+        :return: comport as "COMX" or None
+        """
+        radioport = usbhost.scan_ports()
+        if radioport:
+            self.statusbar.showMessage("Usb2Rardo at port %s is available" % radioport)
+        else:
+            self.statusbar.showMessage("USB2Radio not found")
 
 def ErrorMessage(text):
     """
@@ -306,7 +318,6 @@ def ErrorMessage(text):
     error.setWindowTitle('Ошибка!')
     error.setStandardButtons(QtWidgets.QMessageBox.Ok)
     error.exec_()
-
 
 @logger.catch
 def main():
