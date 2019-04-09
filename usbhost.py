@@ -23,6 +23,46 @@ def scan_ports() -> Optional[str]:
             continue
     return None
 
+
+def open_port(port_id:str):
+    """
+    opens selected serial port and returns it
+    :param port_id:
+    :return:
+    """
+    try:
+        ser = serial.Serial(port_id)
+        return ser
+    except serial.SerialException:
+        return None
+
+
+def close_port(ser):
+    """
+    closes selected port
+    :param port:
+    :return:
+    """
+    ser.close()
+
+def reset_timer(ser) -> str:
+    """
+    resets timer at radio host at ser serial port
+    :param ser: serial port number with host
+    :return command result:
+    """
+    try:
+        command: bytes = bytes("Getbtns\r\n", encoding='utf-8')
+        ser.write(command)
+        answer: str = ser.readall().decode('utf-8')
+        if 'Ack0' in answer:
+            return ""
+        else:
+            return "Ошибка сброса времени"
+    except serial.SerialException:
+        return "Не удалось связаться с хостом"
+
+
 def get_first_button(ser) -> Optional[int]:
     """
     asks comport about buttons pressed
@@ -51,6 +91,3 @@ def get_first_button_from_answer(answer: str) -> Optional[int]:
     if buttons_list:
         return buttons_list[0][0]
     return None
-
-
-

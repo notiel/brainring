@@ -306,7 +306,8 @@ class BrainRing(QtWidgets.QMainWindow, designmain.Ui_MainWindow):
         event.accept()
 
     def SettingsPressed(self):
-        self.settings_form = settings.Settings(self.model)
+        self.port = self.ScanPorts()
+        self.settings_form = settings.Settings(self.model, self.port)
         self.settings_form.show()
 
     def ScanPorts(self) -> Optional[str]:
