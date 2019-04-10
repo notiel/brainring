@@ -116,10 +116,15 @@ class Settings(QtWidgets.QWidget, settings_ui.Ui_Settings):
                 return
             else:
                 self.opened_port = usbhost.open_port(self.port)
+        error = usbhost.reset_timer(self.opened_port)
+        if error:
+            ErrorMessage(error)
+            return
         self.testing = self.sender()
         self.scanning = True
         self.retries = 0
-        usbhost.reset_timer(self.opened_port)
+        self.LblInstruction.setText("Ждем ответа кнопки")
+        print("Successfully started timer")
 
     def TimerEvent(self):
         """
@@ -127,17 +132,21 @@ class Settings(QtWidgets.QWidget, settings_ui.Ui_Settings):
         :return:
         """
         if self.scanning:
+            caption = self.LblInstruction.text() + "."
+            self.LblInstruction.setText(caption)
             self.retries += 1
             button: int = usbhost.get_first_button(self.opened_port)
             if button:
                 self.CBlist[self.btnlist.index(self.testing)].setCurrentText("Кнопка %i" % button)
                 usbhost.close_port(self.opened_port)
                 self.opened_port = None
-        if self.retries > retry_number:
-            ErrorMessage("Ни одна кнопка не нажата в течение 10 секунд, попробуйте еще раз")
-            self.scanning = False
-            usbhost.close_port(self.opened_port)
-            self.opened_port = None
+            print(self.retries)
+            if self.retries > retry_number:
+                ErrorMessage("Ни одна кнопка не нажата в течение 10 секунд, попробуйте еще раз")
+                self.scanning = False
+                usbhost.close_port(self.opened_port)
+                self.opened_port = None
+                self.LblInstruction.setText("Нажмите на кнопку с именем команды для автоопределения")
 
 
 def ErrorMessage(text):

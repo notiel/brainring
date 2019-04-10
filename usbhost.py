@@ -24,7 +24,7 @@ def scan_ports() -> Optional[str]:
     return None
 
 
-def open_port(port_id:str):
+def open_port(port_id: str):
     """
     opens selected serial port and returns it
     :param port_id:
@@ -40,10 +40,11 @@ def open_port(port_id:str):
 def close_port(ser):
     """
     closes selected port
-    :param port:
+    :param ser: serial port
     :return:
     """
     ser.close()
+
 
 def reset_timer(ser) -> str:
     """
@@ -52,10 +53,10 @@ def reset_timer(ser) -> str:
     :return command result:
     """
     try:
-        command: bytes = bytes("Getbtns\r\n", encoding='utf-8')
+        command: bytes = bytes("rsttmr\r\n", encoding='utf-8')
         ser.write(command)
-        answer: str = ser.readall().decode('utf-8')
-        if 'Ack0' in answer:
+        answer: str = ser.readline().decode('utf-8')
+        if 'Ack 0' in answer:
             return ""
         else:
             return "Ошибка сброса времени"
@@ -71,7 +72,7 @@ def get_first_button(ser) -> Optional[int]:
     """
     command: bytes = bytes("Getbtns\r\n", encoding='utf-8')
     ser.write(command)
-    answer: str = ser.readall().decode('utf-8')
+    answer: str = ser.readline().decode('utf-8')
     buttons: str = answer.replace("Btns: ", "")
     return get_first_button_from_answer(buttons)
 
