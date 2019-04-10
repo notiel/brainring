@@ -138,15 +138,21 @@ class Settings(QtWidgets.QWidget, settings_ui.Ui_Settings):
             button: int = usbhost.get_first_button(self.opened_port)
             if button:
                 self.CBlist[self.btnlist.index(self.testing)].setCurrentText("Кнопка %i" % button)
-                usbhost.close_port(self.opened_port)
-                self.opened_port = None
+                self.StateNotScanning()
             print(self.retries)
             if self.retries > retry_number:
                 ErrorMessage("Ни одна кнопка не нажата в течение 10 секунд, попробуйте еще раз")
-                self.scanning = False
-                usbhost.close_port(self.opened_port)
-                self.opened_port = None
-                self.LblInstruction.setText("Нажмите на кнопку с именем команды для автоопределения")
+                self.StateNotScanning()
+
+    def StateNotScanning(self):
+        """
+        closes port, sets not scanning state
+        :return:
+        """
+        self.scanning = False
+        usbhost.close_port(self.opened_port)
+        self.opened_port = None
+        self.LblInstruction.setText("Нажмите на кнопку с именем команды для автоопределения")
 
 
 def ErrorMessage(text):
