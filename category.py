@@ -26,7 +26,7 @@ class CategoryForm(QtWidgets.QWidget):
                 btn.setEnabled(False)
             else:
                 btn.setEnabled(True)
-            btn.clicked.connect(self.BtnClicked)
+            btn.clicked.connect(self.btn_clicked)
 
     def create_layout(self, categories: List[str]):
         layout = QtWidgets.QGridLayout()
@@ -44,7 +44,7 @@ class CategoryForm(QtWidgets.QWidget):
             self.buttons.append(btn)
         self.resize(280 * maxx + 10, 110 * maxy + 10)
 
-    def BtnClicked(self):
+    def btn_clicked(self):
         """
         disables used category
         opens first question window

@@ -1,6 +1,7 @@
 import question
 from PyQt5 import QtWidgets, QtCore, QtGui
 import questiondata
+import common_functions
 import os
 
 
@@ -33,13 +34,8 @@ class QuestionDialog(QtWidgets.QWidget, question.Ui_Form):
         if os.path.exists(filepath) and (filepath.endswith(".jpg") or filepath.endswith('.png')):
             self.image = ImageShow(filepath)
         else:
-            error = QtWidgets.QMessageBox()
-            error.setIcon(QtWidgets.QMessageBox.Critical)
-            error.setText("Файла с картинкой не существует")
-            error.setWindowTitle('Ошибка!')
-            error.setStandardButtons(QtWidgets.QMessageBox.Ok)
-            self.image = None
-            error.exec_()
+            common_functions.error_message("Файла с картинкой не существует")
+
 
     def closeEvent(self, event):
         if self.image:

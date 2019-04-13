@@ -5,6 +5,7 @@ import commanddata
 import designmain
 import settings
 import usbhost
+import common_functions
 import sys
 import os
 from loguru import logger
@@ -36,18 +37,18 @@ def resource_path(relative):
         return os.path.join(os.path.abspath("."), relative)
 
 
-class States (Enum):
+class States(Enum):
     NO_CAT = 0
     CAT_SELECTED = 1
     QUEST_SELECTED = 2
     ANSWER_READY = 3
     TIMER_STOPPED = 4
     TIMER_ENDED = 5
-    
+
 
 class GameState(QtWidgets.QWidget):
     state_signal = QtCore.pyqtSignal()
-    
+
     def __init__(self):
         super().__init__()
         self.game: Optional[questiondata.Game] = None
@@ -64,13 +65,13 @@ class GameState(QtWidgets.QWidget):
         """
         self.game = game
 
-    def set_category(self, name: str):
+    def set_category(self, new_category: Optional[questiondata.Category]):
         """
         sets category to state
-        :param name: category name
+        :param new_category: category name
         :return:
         """
-        self.category = name
+        self.category = new_category
         self.set_state(States.CAT_SELECTED)
 
     def set_state(self, state: States):
@@ -106,63 +107,63 @@ class BrainRing(QtWidgets.QMainWindow, designmain.Ui_MainWindow):
         self.game = None
         self.category_form = None
         self.settings_form = None
-        self.port = self.ScanPorts()
+        self.port = self.scan_ports()
         self.state: GameState = GameState()
-        self.state.state_signal.connect(self.StateChanged)
+        self.state.state_signal.connect(self.state_changed)
 
         self.timer = QtCore.QTimer()
-        self.timer.timeout.connect(self.TimerEvent)
+        self.timer.timeout.connect(self.timerEvent)
         self.timer.start(1000)
 
         self.Open.setShortcut('Ctrl+O')
-        self.Open.triggered.connect(self.OpenPressed)
+        self.Open.triggered.connect(self.menu_open_pressed)
         self.Settings_2.setShortcut('Ctrl+S')
-        self.Settings_2.triggered.connect(self.SettingsPressed)
-        self.BtnNew.clicked.connect(self.NewQuestion)
-        self.BtnNext.clicked.connect(self.NewQuestion)
-        self.BtnEnd.clicked.connect(self.NewCategory)
-        self.BtnTimer.clicked.connect(self.TimerPressed)
-        self.BtnTest.clicked.connect(self.BtnTestPressed)
+        self.Settings_2.triggered.connect(self.menu_settings_pressed)
+        self.BtnNew.clicked.connect(self.new_question)
+        self.BtnNext.clicked.connect(self.new_question)
+        self.BtnEnd.clicked.connect(self.new_category)
+        self.BtnTimer.clicked.connect(self.btn_timer_pressed)
+        self.BtnTest.clicked.connect(self.btn_test_pressed)
 
         self.model = commanddata.CommandTableModel()
         self.TblCmnd.setModel(self.model)
 
-    def OpenPressed(self):
+    def menu_open_pressed(self):
         openfilename = QtWidgets.QFileDialog.getOpenFileName(self, 'Выберите игру', "")[0]
         if openfilename and openfilename.endswith(".xlsx"):
             self.game, error = questiondata.create_game(openfilename)
             if self.game:
                 if error:
-                    ErrorMessage(error)
+                    common_functions.error_message(error)
                 self.state.set_game(self.game)
                 self.category_form = category.CategoryForm(self.game)
-                self.category_form.category_signal[str].connect(self.CategorySelected)
+                self.category_form.category_signal[str].connect(self.category_selected)
                 self.category_form.show()
         else:
-            ErrorMessage('Файл не выбран или формат неверный (выберите .xlxs файл')
+            common_functions.error_message('Файл не выбран или формат неверный (выберите .xlxs файл')
 
-    def StateChanged(self):
+    def state_changed(self):
         """
         applies state to UI
         :return:
         """
         if self.state.state == States.CAT_SELECTED:
-            self.SetStateCategory()
+            self.set_state_category()
         if self.state.state == States.QUEST_SELECTED:
-            self.SetStateQuestion()
+            self.set_state_question()
         if self.state.state == States.TIMER_ENDED:
-            self.SetStateTimeEnded()
+            self.set_state_time_ended()
 
-    def CategorySelected(self,  category_passed):
+    def category_selected(self, category_passed):
         """
         changes game state
-        :param category: category name
+        :param category_passed: category name
         :return:
         """
         actual_category: questiondata.Category = self.game.get_category_by_name(category_passed)
         self.state.set_category(actual_category)
 
-    def NewQuestion(self):
+    def new_question(self):
         """
         shows next question
         :return:
@@ -170,21 +171,21 @@ class BrainRing(QtWidgets.QMainWindow, designmain.Ui_MainWindow):
         self.category_form.stub.setVisible(False)
         self.state.set_state(States.QUEST_SELECTED)
 
-    def CloseQuestion(self):
+    def close_question(self):
         """
 
         :return:
         """
         pass
 
-    def NewCategory(self):
+    def new_category(self):
         """
 
         :return:
         """
         self.category_form.setVisible(True)
 
-    def TimerEvent(self):
+    def timerEvent(self):
         """
         decreases time and disables controls if time is over
         :return:
@@ -198,7 +199,7 @@ class BrainRing(QtWidgets.QMainWindow, designmain.Ui_MainWindow):
             else:
                 self.state.set_state(States.TIMER_ENDED)
 
-    def TimerPressed(self):
+    def btn_timer_pressed(self):
         """
         starts and stops timer at any moment
         :return:
@@ -210,7 +211,7 @@ class BrainRing(QtWidgets.QMainWindow, designmain.Ui_MainWindow):
             self.state.time = True
             self.BtnTimer.setText('Стоп')
 
-    def SetStateCategory(self):
+    def set_state_category(self):
         """
         sets controls states when Category Selected
         :return:
@@ -225,7 +226,7 @@ class BrainRing(QtWidgets.QMainWindow, designmain.Ui_MainWindow):
         self.TxtQstn.clear()
         self.LblAnswer.clear()
 
-    def SetStateQuestion(self):
+    def set_state_question(self):
         """
         sets controls state when Question exists
         :return:
@@ -233,7 +234,6 @@ class BrainRing(QtWidgets.QMainWindow, designmain.Ui_MainWindow):
         self.Timer.display(questiondata.question_time)
         self.Timer.setStyleSheet('color: blue')
         self.BtnEnd.setEnabled(True)
-        actual_category: questiondata.Category = self.state.category
         if self.state.question == len(self.state.category.questions) - 1:
             self.BtnNew.setEnabled(False)
         else:
@@ -243,9 +243,17 @@ class BrainRing(QtWidgets.QMainWindow, designmain.Ui_MainWindow):
         self.BtnNext.setEnabled(False)
         self.BtnTimer.setEnabled(True)
         self.BtnTimer.setText('Стоп')
+        self.set_question_ui()
 
+    def set_question_ui(self):
+        """
+        sets ui of question (text and other question data)
+        :return:
+        """
+
+        actual_category: questiondata.Category = self.state.category
         self.LblDscr.setText("%s: Вопрос № %i из %i. Стоимость %i " %
-                             (actual_category.name, self.state.question+1, len(actual_category.questions),
+                             (actual_category.name, self.state.question + 1, len(actual_category.questions),
                               actual_category.questions[self.state.question].points))
         self.TxtQstn.setHtml("<!DOCTYPE HTML PUBLIC \"-//W3C//DTD HTML 4.0//EN\" "
                              "\"http://www.w3.org/TR/REC-html40/strict.dtd\">\n"
@@ -264,7 +272,7 @@ class BrainRing(QtWidgets.QMainWindow, designmain.Ui_MainWindow):
         if self.category_form.question.image:
             self.category_form.question.image.show()
 
-    def SetStateAnswer(self):
+    def set_state_answer(self):
         # self.time = False
         self.BtnEnd.setEnabled(True)
         self.BtnNew.setEnabled(True)
@@ -273,7 +281,7 @@ class BrainRing(QtWidgets.QMainWindow, designmain.Ui_MainWindow):
         self.BtnNext.setEnabled(False)
         self.BtnTimer.setEnabled(True)
 
-    def SetStateTimeEnded(self):
+    def set_state_time_ended(self):
         """
         sets controls state for end of time
         :return:
@@ -284,19 +292,18 @@ class BrainRing(QtWidgets.QMainWindow, designmain.Ui_MainWindow):
         self.BtnNew.setEnabled(True)
         self.BtnNext.setEnabled(False)
         self.BtnTimer.setEnabled(False)
-        
-    def BtnTestPressed(self):
+
+    def btn_test_pressed(self):
         """
         rescan ports and shows pressed buttons for all command
         :return:
         """
-        self.port = self.ScanPorts()
+        self.port = self.scan_ports()
         if self.port:
             # will be done later
             pass
         else:
-            ErrorMessage("Нет связи с кнопками")
-
+            common_functions.error_message("Нет связи с кнопками")
 
     def closeEvent(self, event):
         if self.category_form:
@@ -305,12 +312,12 @@ class BrainRing(QtWidgets.QMainWindow, designmain.Ui_MainWindow):
             self.category_form.close()
         event.accept()
 
-    def SettingsPressed(self):
-        self.port = self.ScanPorts()
+    def menu_settings_pressed(self):
+        self.port = self.scan_ports()
         self.settings_form = settings.Settings(self.model, self.port)
         self.settings_form.show()
 
-    def ScanPorts(self) -> Optional[str]:
+    def scan_ports(self) -> Optional[str]:
         """
         returns comport with our radiodevice and updates statusbar
         :return: comport as "COMX" or None
@@ -323,18 +330,6 @@ class BrainRing(QtWidgets.QMainWindow, designmain.Ui_MainWindow):
             self.statusbar.showMessage("USB2Radio not found")
             return None
 
-def ErrorMessage(text):
-    """
-    shows error window with text
-    :param text: error text
-    :return:
-    """
-    error = QtWidgets.QMessageBox()
-    error.setIcon(QtWidgets.QMessageBox.Critical)
-    error.setText(text)
-    error.setWindowTitle('Ошибка!')
-    error.setStandardButtons(QtWidgets.QMessageBox.Ok)
-    error.exec_()
 
 @logger.catch
 def main():

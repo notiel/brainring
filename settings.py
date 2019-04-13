@@ -2,6 +2,7 @@ import settings_ui
 import commanddata
 import questiondata
 import usbhost
+import common_functions
 from PyQt5 import QtWidgets, QtCore
 from typing import List, Optional
 
@@ -22,7 +23,7 @@ class Settings(QtWidgets.QWidget, settings_ui.Ui_Settings):
         self.testing: Optional[QtWidgets.QPushButton] = None
         self.retries: int = 0
         self.timer = QtCore.QTimer()
-        self.timer.timeout.connect(self.TimerEvent)
+        self.timer.timeout.connect(self.timerEvent)
         self.timer.start(500)
 
         self.commanddata: commanddata.CommandTableModel = commandmodel
@@ -44,17 +45,17 @@ class Settings(QtWidgets.QWidget, settings_ui.Ui_Settings):
             for btn in self.btnlist:
                 btn.setEnabled(False)
         for CB in self.checklist:
-            CB.stateChanged.connect(self.CommandActivated)
+            CB.stateChanged.connect(self.command_activated)
         for CB in self.CBlist:
             caption: str = "Кнопка %i" % (self.CBlist.index(CB) + 1)
             CB.setCurrentText(caption)
             self.CBlabels.append(caption)
-            CB.currentTextChanged.connect(self.ButtonSelected)
+            CB.currentTextChanged.connect(self.button_selected)
         for btn in self.btnlist:
-            btn.clicked.connect(self.SelectButtonPressed)
-        self.SpinLength.valueChanged.connect(self.QuestionTimeChanged)
+            btn.clicked.connect(self.btn_select_pressed)
+        self.SpinLength.valueChanged.connect(self.question_time_changed)
 
-    def CommandActivated(self):
+    def command_activated(self):
         """
         activates and deactivates corresponging command
         :return:
@@ -69,7 +70,7 @@ class Settings(QtWidgets.QWidget, settings_ui.Ui_Settings):
         else:
             self.commanddata.disable_command(i)
 
-    def ButtonSelected(self):
+    def button_selected(self):
         """
         selects button for command (each command must have unique button id)
         :return:
@@ -88,7 +89,7 @@ class Settings(QtWidgets.QWidget, settings_ui.Ui_Settings):
                     CB.setCurrentText(absent)
                     self.commanddata.update_button_id(self.CBlist.index(CB), int(absent.replace("Кнопка ", "")))
 
-    def QuestionTimeChanged(self):
+    def question_time_changed(self):
         """
         change question length
         :return:
@@ -96,14 +97,14 @@ class Settings(QtWidgets.QWidget, settings_ui.Ui_Settings):
         self.SpinBefore.setMaximum(self.SpinLength.value())
         questiondata.question_time = self.SpinLength.value()
 
-    def TimeLowThresholdChanged(self):
+    def time_low_threshold_changed(self):
         """
         change time threshold for giving signal that time is almost ended
         :return:
         """
         questiondata.time_low_threshold = self.SpinBefore.value()
 
-    def SelectButtonPressed(self):
+    def btn_select_pressed(self):
         """
         enables timer if any button pressed, button is remembered in self.testing variable
         :return:
@@ -112,13 +113,13 @@ class Settings(QtWidgets.QWidget, settings_ui.Ui_Settings):
         if not self.opened_port:
             self.port = usbhost.scan_ports()
             if not self.port:
-                ErrorMessage("Нет подключенных кнопок")
+                common_functions.error_message("Нет подключенных кнопок")
                 return
             else:
                 self.opened_port = usbhost.open_port(self.port)
         error = usbhost.reset_timer(self.opened_port)
         if error:
-            ErrorMessage(error)
+            common_functions.error_message(error)
             return
         self.testing = self.sender()
         self.scanning = True
@@ -126,7 +127,7 @@ class Settings(QtWidgets.QWidget, settings_ui.Ui_Settings):
         self.LblInstruction.setText("Ждем ответа кнопки")
         print("Successfully started timer")
 
-    def TimerEvent(self):
+    def timerEvent(self):
         """
         if timer as active, try to get button pressed
         :return:
@@ -138,13 +139,13 @@ class Settings(QtWidgets.QWidget, settings_ui.Ui_Settings):
             button: int = usbhost.get_first_button(self.opened_port)
             if button:
                 self.CBlist[self.btnlist.index(self.testing)].setCurrentText("Кнопка %i" % button)
-                self.StateNotScanning()
+                self.state_not_scanning()
             print(self.retries)
             if self.retries > retry_number:
-                ErrorMessage("Ни одна кнопка не нажата в течение 10 секунд, попробуйте еще раз")
-                self.StateNotScanning()
+                common_functions.error_message("Ни одна кнопка не нажата в течение 10 секунд, попробуйте еще раз")
+                self.state_not_scanning()
 
-    def StateNotScanning(self):
+    def state_not_scanning(self):
         """
         closes port, sets not scanning state
         :return:
@@ -153,17 +154,3 @@ class Settings(QtWidgets.QWidget, settings_ui.Ui_Settings):
         usbhost.close_port(self.opened_port)
         self.opened_port = None
         self.LblInstruction.setText("Нажмите на кнопку с именем команды для автоопределения")
-
-
-def ErrorMessage(text):
-    """
-    shows error window with text
-    :param text: error text
-    :return:
-    """
-    error = QtWidgets.QMessageBox()
-    error.setIcon(QtWidgets.QMessageBox.Critical)
-    error.setText(text)
-    error.setWindowTitle('Ошибка!')
-    error.setStandardButtons(QtWidgets.QMessageBox.Ok)
-    error.exec_()
