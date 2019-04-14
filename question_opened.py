@@ -83,7 +83,7 @@ class QuestionDialog(QtWidgets.QWidget, question.Ui_Form):
                 self.LCDTimer.display(current - 1)
                 if current == questiondata.time_low_threshold + 1:
                     self.LCDTimer.setStyleSheet("color: red")
-            button: int = usbhost.get_first_button(self.opened_port)
+            button: int = usbhost.get_first_button(self.opened_port, "answer")
             print(button)
             if button:
                 self.BtnAnswer.setText("Отвечает команда %i" % button)

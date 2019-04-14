@@ -57,6 +57,7 @@ class GameState(QtWidgets.QWidget):
         self.state: States = States.NO_CAT
         self.category: Optional[questiondata.Category] = None
         self.question: int = -1
+        self.command: int = -1
 
     def set_game(self, game: questiondata.Game):
         """
@@ -112,6 +113,21 @@ class GameState(QtWidgets.QWidget):
         :return:
         """
         self.time = True
+
+    def set_command(self, command: int):
+        """
+        sets answering command id
+        :param command: id of answering command
+        :return:
+        """
+        self.command = command-1
+
+    def delete_command(self):
+        """
+        resets answering command number
+        :return:
+        """
+        self.command = -1
 
 
 class BrainRing(QtWidgets.QMainWindow, designmain.Ui_MainWindow):
@@ -233,6 +249,7 @@ class BrainRing(QtWidgets.QMainWindow, designmain.Ui_MainWindow):
         sets controls states when Category Selected
         :return:
         """
+        usbhost.change_color_all(usbhost.state_color_dict['color_idle'])
         self.BtnEnd.setEnabled(False)
         self.BtnNew.setEnabled(False)
         self.BtnTrue.setEnabled(False)
@@ -248,6 +265,7 @@ class BrainRing(QtWidgets.QMainWindow, designmain.Ui_MainWindow):
         sets controls state when Question exists
         :return:
         """
+        usbhost.change_color_all(usbhost.state_color_dict['color_answer'])
         self.Timer.display(questiondata.question_time)
         self.Timer.setStyleSheet('color: blue')
         self.BtnEnd.setEnabled(True)
@@ -299,8 +317,19 @@ class BrainRing(QtWidgets.QMainWindow, designmain.Ui_MainWindow):
         self.LblCommand.setText("Отвечает команда %i" % button)
         self.LblCommand.setStyleSheet("color: red")
         self.state.set_state(States.ANSWER_READY)
+        self.state.set_command(button)
+
+    def btn_true_pressed(self):
+        """
+        scores a question, sends back scoring signal, sets state to category selected state
+        :return:
+        """
+        self.model.commanddata.commands[self.state.command].points += \
+            self.state.category.questions[self.state.question].points
+        self.model.commanddata.commands[self.state.command].questions += 1
 
     def set_state_answer(self):
+        usbhost.change_color_all(usbhost.state_color_dict['color_idle'])
         self.state.stop_time()
         self.BtnEnd.setEnabled(True)
         self.BtnNew.setEnabled(False)
