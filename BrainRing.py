@@ -98,6 +98,19 @@ class GameState(QtWidgets.QWidget):
         """
         self.question += 1
 
+    def stop_time(self):
+        """
+        stops timer
+        :return:
+        """
+        self.time = False
+
+    def start_time(self):
+        """
+        starts timer
+        :return:
+        """
+        self.time = True
 
 class BrainRing(QtWidgets.QMainWindow, designmain.Ui_MainWindow):
 
@@ -153,6 +166,8 @@ class BrainRing(QtWidgets.QMainWindow, designmain.Ui_MainWindow):
             self.set_state_question()
         if self.state.state == States.TIMER_ENDED:
             self.set_state_time_ended()
+        if self.state.state == States.ANSWER_READY:
+            self.set_state_answer()
 
     def category_selected(self, category_passed):
         """
@@ -205,10 +220,10 @@ class BrainRing(QtWidgets.QMainWindow, designmain.Ui_MainWindow):
         :return:
         """
         if self.state.time:
-            self.state.time = False
+            self.state.stop_time()
             self.BtnTimer.setText('Старт')
         else:
-            self.state.time = True
+            self.state.start_time()
             self.BtnTimer.setText('Стоп')
 
     def set_state_category(self):
@@ -268,15 +283,23 @@ class BrainRing(QtWidgets.QMainWindow, designmain.Ui_MainWindow):
                              % actual_category.questions[self.state.question].description)
         self.LblAnswer.setText(actual_category.questions[self.state.question].answer)
         self.category_form.question = question_opened.QuestionDialog(actual_category, self.state.question, self.port)
-        self.category_form.question.question_signal.connect(self.cmd_button_pressed)
+        self.category_form.question.question_signal[int].connect(self.cmd_button_pressed)
         self.category_form.question.show()
         if self.category_form.question.image:
             self.category_form.question.image.show()
 
+    def cmd_button_pressed(self, button):
+        """
+        gets signal from buttons and allows to score a question (change state to answer)
+        :return:
+        """
+        self.LblCommand.setText("Отвечает команда %i" % button)
+        self.state.set_state(States.ANSWER_READY)
+
     def set_state_answer(self):
-        # self.time = False
+        self.state.stop_time()
         self.BtnEnd.setEnabled(True)
-        self.BtnNew.setEnabled(True)
+        self.BtnNew.setEnabled(False)
         self.BtnTrue.setEnabled(True)
         self.BtnFalse.setEnabled(True)
         self.BtnNext.setEnabled(False)
@@ -306,13 +329,6 @@ class BrainRing(QtWidgets.QMainWindow, designmain.Ui_MainWindow):
         else:
             common_functions.error_message("Нет связи с кнопками")
 
-    def closeEvent(self, event):
-        if self.category_form:
-            if self.category_form.question:
-                self.category_form.question.close()
-            self.category_form.close()
-        event.accept()
-
     def menu_settings_pressed(self):
         self.port = self.scan_ports()
         self.settings_form = settings.Settings(self.model, self.port)
@@ -330,6 +346,13 @@ class BrainRing(QtWidgets.QMainWindow, designmain.Ui_MainWindow):
         else:
             self.statusbar.showMessage("USB2Radio not found")
             return None
+
+    def closeEvent(self, event):
+        if self.category_form:
+            if self.category_form.question:
+                self.category_form.question.close()
+            self.category_form.close()
+        event.accept()
 
 
 @logger.catch
