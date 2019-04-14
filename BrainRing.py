@@ -267,7 +267,8 @@ class BrainRing(QtWidgets.QMainWindow, designmain.Ui_MainWindow):
                              "font-weight:600; color:#000000;\">%s</span></p></body></html>"
                              % actual_category.questions[self.state.question].description)
         self.LblAnswer.setText(actual_category.questions[self.state.question].answer)
-        self.category_form.question = question_opened.QuestionDialog(actual_category, self.state.question)
+        self.category_form.question = question_opened.QuestionDialog(actual_category, self.state.question, self.port)
+        self.category_form.question.question_signal.connect(self.cmd_button_pressed)
         self.category_form.question.show()
         if self.category_form.question.image:
             self.category_form.question.image.show()

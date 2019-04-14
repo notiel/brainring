@@ -73,6 +73,7 @@ def get_first_button(ser) -> Optional[int]:
     command: bytes = bytes("Getbtns\r\n", encoding='utf-8')
     ser.write(command)
     answer: str = ser.readline().decode('utf-8')
+    print(answer)
     buttons: str = answer.replace("Btns: ", "")
     btn = get_first_button_from_answer(buttons)
     if btn:
