@@ -1,6 +1,13 @@
 import serial
 import serial.tools.list_ports
-from typing import Optional, List
+from typing import Optional, List, Tuple
+import common_functions
+
+state_color_dict = {'color_idle': (255, 255, 0),
+                    'color_answer': (0, 255, 255),
+                    'color_pressed': (0, 255, 0),
+                    'color_pressed_second': (0, 0, 255)}
+pause_ms = 300
 
 
 def scan_ports() -> Optional[str]:
@@ -64,10 +71,11 @@ def reset_timer(ser) -> str:
         return "Не удалось связаться с хостом"
 
 
-def get_first_button(ser) -> Optional[int]:
+def get_first_button(ser, state: str) -> Optional[int]:
     """
     asks comport about buttons pressed
-    :param ser: serial port with radio 
+    :param ser: serial port with radio
+    :param state: state to get color back ("idle" for idle color, "question" for question color"
     :return: number of first pressed button
     """
     command: bytes = bytes("Getbtns\r\n", encoding='utf-8')
@@ -77,9 +85,51 @@ def get_first_button(ser) -> Optional[int]:
     buttons: str = answer.replace("Btns: ", "")
     btn = get_first_button_from_answer(buttons)
     if btn:
-        command = bytes("SetClrAll 255 0 0\r\n", encoding='utf-8')
-        ser.write(command)
+        if state == 'idle':
+            flash_color(ser, btn, state_color_dict['color_pressed'], pause_ms, state_color_dict['color_idle'])
+        if state == 'answer':
+            flash_color(ser, btn, state_color_dict['color_pressed'], pause_ms, state_color_dict['color_idle'])
     return btn
+
+
+def change_color(ser, button: int, color: Tuple[int, int, int]):
+    """
+    change color of selected button
+    :param ser: opened serial port
+    :param button: button id
+    :param color: new color
+    :return:
+    """
+    try:
+        command: bytes = bytes("SetClr % i, %i %i %i" % (button, int(color[0]), int(color[1]), int(color[2])))
+        ser.write(command)
+        answer: ser= ser.readline().decode('utf-8')
+        if "Ack0" not in answer:
+            common_functions.error_message("Ошибка смены цвета")
+    except (serial.SerialException, IndexError, AttributeError):
+        common_functions.error_message("Ошибка смены цвета")
+
+
+def flash_color(ser, button: int, color1: Tuple[int, int, int], length: int, color2: Tuple[int, int, int]):
+    """
+    change color of selected button
+    :param ser: opened serial port
+    :param button: button id
+    :param color1: new color
+    :param length: length of pause
+    :param color2: color to return to
+    :return:
+    """
+    try:
+        command: bytes = bytes("Flash % i, %i %i %i, %i, %i %i %i" %
+                               (button, int(color1[0]), int(color1[1]), int(color1[2]), length, int(color2[0]),
+                               int(color2[1]), int(color2[2])))
+        ser.write(command)
+        answer: ser = ser.readline().decode('utf-8')
+        if "Ack0" not in answer:
+            common_functions.error_message("Ошибка смены цвета")
+    except (serial.SerialException, IndexError, AttributeError):
+        common_functions.error_message("Ошибка смены цвета")
 
 
 def get_first_button_from_answer(answer: str) -> Optional[int]:
