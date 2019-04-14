@@ -87,9 +87,18 @@ class QuestionDialog(QtWidgets.QWidget, question.Ui_Form):
             print(button)
             if button:
                 self.BtnAnswer.setText("Отвечает команда %i" % button)
+                self.BtnAnswer.setStyleSheet("color: red")
                 self.question_signal.emit(button)
                 self.scanning = False
                 usbhost.close_port(self.opened_port)
+
+    def answer_processed(self, result):
+        """
+
+        :param result:
+        :return:
+        """
+        pass
 
     def closeEvent(self, event):
         if self.image:

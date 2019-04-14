@@ -48,6 +48,7 @@ class States(Enum):
 
 class GameState(QtWidgets.QWidget):
     state_signal = QtCore.pyqtSignal()
+    answer_signal = QtCore.pyqtSignal(bool)
 
     def __init__(self):
         super().__init__()
@@ -111,6 +112,7 @@ class GameState(QtWidgets.QWidget):
         :return:
         """
         self.time = True
+
 
 class BrainRing(QtWidgets.QMainWindow, designmain.Ui_MainWindow):
 
@@ -284,6 +286,7 @@ class BrainRing(QtWidgets.QMainWindow, designmain.Ui_MainWindow):
         self.LblAnswer.setText(actual_category.questions[self.state.question].answer)
         self.category_form.question = question_opened.QuestionDialog(actual_category, self.state.question, self.port)
         self.category_form.question.question_signal[int].connect(self.cmd_button_pressed)
+        self.state.answer_signal[bool].connect(self.category_form.question.answer_processed)
         self.category_form.question.show()
         if self.category_form.question.image:
             self.category_form.question.image.show()
@@ -294,6 +297,7 @@ class BrainRing(QtWidgets.QMainWindow, designmain.Ui_MainWindow):
         :return:
         """
         self.LblCommand.setText("Отвечает команда %i" % button)
+        self.LblCommand.setStyleSheet("color: red")
         self.state.set_state(States.ANSWER_READY)
 
     def set_state_answer(self):
