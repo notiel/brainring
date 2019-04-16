@@ -121,7 +121,7 @@ class GameState(QtWidgets.QWidget):
         :return:
         """
 
-        self.command = command-1
+        self.command = command
 
     def delete_command(self):
         """
@@ -305,7 +305,8 @@ class BrainRing(QtWidgets.QMainWindow, designmain.Ui_MainWindow):
                              "font-weight:600; color:#000000;\">%s</span></p></body></html>"
                              % actual_category.questions[self.state.question].description)
         self.LblAnswer.setText(actual_category.questions[self.state.question].answer)
-        self.category_form.question = question_opened.QuestionDialog(actual_category, self.state.question, self.port)
+        self.category_form.question = question_opened.QuestionDialog(actual_category, self.state.question, self.port,
+                                                                     self.model)
         self.category_form.question.question_signal[int].connect(self.cmd_button_pressed)
         self.state.answer_signal[bool].connect(self.category_form.question.answer_processed)
         self.category_form.question.show()
@@ -317,10 +318,10 @@ class BrainRing(QtWidgets.QMainWindow, designmain.Ui_MainWindow):
         gets signal from buttons and allows to score a question (change state to answer)
         :return:
         """
-        self.LblCommand.setText("Отвечает команда %i" % button)
-        self.LblCommand.setStyleSheet("color: red")
         self.state.set_state(States.ANSWER_READY)
         self.state.set_command(self.model.commanddata.get_command_by_button(button))
+        self.LblCommand.setText("Отвечает команда %i" % (self.state.command+1))
+        self.LblCommand.setStyleSheet("color: red")
 
     def btn_true_pressed(self):
         """

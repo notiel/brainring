@@ -10,11 +10,12 @@ class QuestionDialog(QtWidgets.QWidget, question.Ui_Form):
 
     question_signal = QtCore.pyqtSignal(int)
 
-    def __init__(self, category: questiondata.Category, number, port):
+    def __init__(self, category: questiondata.Category, number, port, model):
         super().__init__()
         self.setupUi(self)
         self.count: int = 0
         self.port = port
+        self.model = model
         self.opened_port = None
         self.scanning = False
 
@@ -86,7 +87,8 @@ class QuestionDialog(QtWidgets.QWidget, question.Ui_Form):
             button: int = usbhost.get_first_button(self.opened_port, "answer")
             print(button)
             if button:
-                self.BtnAnswer.setText("Отвечает команда %i" % button)
+                self.BtnAnswer.setText("Отвечает команда %i" %
+                                       (self.model.commanddata.get_command_by_button(button) + 1))
                 self.BtnAnswer.setStyleSheet("color: red")
                 self.scanning = False
                 usbhost.close_port(self.opened_port)

@@ -133,6 +133,7 @@ class Settings(QtWidgets.QWidget, settings_ui.Ui_Settings):
         :return:
         """
         if self.scanning:
+            print('scan')
             caption = self.LblInstruction.text() + "."
             self.LblInstruction.setText(caption)
             self.retries += 1
