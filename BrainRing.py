@@ -42,8 +42,9 @@ class States(Enum):
     CAT_SELECTED = 1
     QUEST_SELECTED = 2
     ANSWER_READY = 3
-    TIMER_STOPPED = 4
-    TIMER_ENDED = 5
+    CONTINUE = 4
+    TIMER_STOPPED = 5
+    TIMER_ENDED = 6
 
 
 class GameState(QtWidgets.QWidget):
@@ -91,6 +92,10 @@ class GameState(QtWidgets.QWidget):
             self.question = -1
         if state == States.TIMER_ENDED:
             self.time = False
+        if state == States.ANSWER_READY:
+            self.time = False
+        if state == States.CONTINUE:
+            self.time = True
         self.state_signal.emit()
 
     def next_question(self):
@@ -158,6 +163,7 @@ class BrainRing(QtWidgets.QMainWindow, designmain.Ui_MainWindow):
         self.BtnTimer.clicked.connect(self.btn_timer_pressed)
         self.BtnTest.clicked.connect(self.btn_test_pressed)
         self.BtnTrue.clicked.connect(self.btn_true_pressed)
+        self.BtnFalse.clicked.connect(self.btn_false_pressed)
 
         self.model = commanddata.CommandTableModel()
         self.TblCmnd.setModel(self.model)
@@ -184,11 +190,13 @@ class BrainRing(QtWidgets.QMainWindow, designmain.Ui_MainWindow):
         if self.state.state == States.CAT_SELECTED:
             self.set_state_category()
         if self.state.state == States.QUEST_SELECTED:
-            self.set_state_question()
+            self.set_state_new_question()
         if self.state.state == States.TIMER_ENDED:
             self.set_state_time_ended()
         if self.state.state == States.ANSWER_READY:
             self.set_state_answer()
+        if self.state.state == States.CONTINUE:
+            self.set_state_continue()
 
     def category_selected(self, category_passed):
         """
@@ -254,7 +262,7 @@ class BrainRing(QtWidgets.QMainWindow, designmain.Ui_MainWindow):
         """
         self.set_color('color_idle')
         self.BtnEnd.setEnabled(False)
-        self.BtnNew.setEnabled(False)
+        self.BtnNew.setEnabled(True)
         self.BtnTrue.setEnabled(False)
         self.BtnFalse.setEnabled(False)
         self.BtnNext.setEnabled(True)
@@ -263,24 +271,14 @@ class BrainRing(QtWidgets.QMainWindow, designmain.Ui_MainWindow):
         self.TxtQstn.clear()
         self.LblAnswer.clear()
 
-    def set_state_question(self):
+    def set_state_new_question(self):
         """
         sets controls state when Question exists
         :return:
         """
-        self.set_color('color_answer')
         self.Timer.display(questiondata.question_time)
         self.Timer.setStyleSheet('color: blue')
-        self.BtnEnd.setEnabled(True)
-        if self.state.question == len(self.state.category.questions) - 1:
-            self.BtnNew.setEnabled(False)
-        else:
-            self.BtnNew.setEnabled(True)
-        self.BtnTrue.setEnabled(False)
-        self.BtnFalse.setEnabled(False)
-        self.BtnNext.setEnabled(False)
-        self.BtnTimer.setEnabled(True)
-        self.BtnTimer.setText('Стоп')
+        self.set_question_state()
         self.set_question_ui()
 
     def set_question_ui(self):
@@ -330,10 +328,19 @@ class BrainRing(QtWidgets.QMainWindow, designmain.Ui_MainWindow):
         """
         self.model.score_question(self.state.command, self.state.category.questions[self.state.question].points)
         self.state.set_state(States.CAT_SELECTED)
+        self.state.answer_signal.emit(True)
+
+    def btn_false_pressed(self):
+        """
+        enables answering
+        :return:
+        """
+        self.state.set_state(States.CONTINUE)
+        self.state.answer_signal.emit(False)
 
     def set_state_answer(self):
         self.set_color('color_idle')
-        self.state.stop_time()
+        # self.state.stop_time()
         self.BtnTimer.setText("Старт")
         self.BtnEnd.setEnabled(True)
         self.BtnNew.setEnabled(False)
@@ -341,6 +348,31 @@ class BrainRing(QtWidgets.QMainWindow, designmain.Ui_MainWindow):
         self.BtnFalse.setEnabled(True)
         self.BtnNext.setEnabled(False)
         self.BtnTimer.setEnabled(True)
+
+    def set_state_continue(self):
+        """
+        sets controls state when Question is continued after wrong answer
+        :return:
+        """
+        self.LblCommand.setText("Отвечает команда:")
+        self.set_question_state()
+
+    def set_question_state(self):
+        """
+        sets ui state for question
+        :return:
+        """
+        self.set_color('color_answer')
+        self.BtnEnd.setEnabled(True)
+        if self.state.question == len(self.state.category.questions) - 1:
+            self.BtnNew.setEnabled(False)
+        else:
+            self.BtnNew.setEnabled(True)
+        self.BtnTrue.setEnabled(False)
+        self.BtnFalse.setEnabled(False)
+        self.BtnNext.setEnabled(False)
+        self.BtnTimer.setEnabled(True)
+        self.BtnTimer.setText('Стоп')
 
     def set_state_time_ended(self):
         """

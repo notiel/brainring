@@ -100,7 +100,11 @@ class QuestionDialog(QtWidgets.QWidget, question.Ui_Form):
         :param result:
         :return:
         """
-        pass
+        if result:
+            self.destroy()
+        else:
+            self.open_port()
+            self.BtnAnswer.setText("Отвечает команда...")
 
     def closeEvent(self, event):
         if self.image:
