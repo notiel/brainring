@@ -12,6 +12,16 @@ class Commands:
         for i in range(available_commands):
             self.commands[i].available = True
 
+    def get_command_by_button(self, button: int) -> int:
+        """
+        gets command name by id of button
+        :param button:
+        :return:
+        """
+        for cmd in self.commands:
+            if cmd.button_id == button:
+                return self.commands.index(cmd)
+        return -1
 
 @dataclass
 class Command:
@@ -117,4 +127,15 @@ class CommandTableModel(QAbstractTableModel):
         :return:
         """
         self.commanddata.commands[command_number].button_id = new_button
+        self.dataChanged.emit(QModelIndex(), QModelIndex())
+
+    def score_question(self, command: int, points: int, ):
+        """
+        score question (update points and question number)
+        :param command: command to score
+        :param points: points to add
+        :return:
+        """
+        self.commanddata.commands[command].points += points
+        self.commanddata.commands[command].questions += 1
         self.dataChanged.emit(QModelIndex(), QModelIndex())
