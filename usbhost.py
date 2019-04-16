@@ -3,11 +3,11 @@ import serial.tools.list_ports
 from typing import Optional, List, Tuple
 import common_functions
 
-state_color_dict = {'color_idle': (255, 255, 0),
+state_color_dict = {'color_idle': (255, 200, 0),
                     'color_answer': (0, 255, 255),
                     'color_pressed': (0, 255, 0),
                     'color_pressed_second': (0, 0, 255)}
-pause_ms = 300
+pause_ms = 500
 
 
 def scan_ports() -> Optional[str]:
@@ -101,10 +101,11 @@ def change_color(ser, button: int, color: Tuple[int, int, int]):
     :return:
     """
     try:
-        command: bytes = bytes("SetClr % i, %i %i %i" % (button, int(color[0]), int(color[1]), int(color[2])))
+        command: bytes = bytes("SetClr % i, %i %i %i\r\n" % (button, int(color[0]), int(color[1]), int(color[2])),
+                               encoding='utf-8')
         ser.write(command)
         answer: ser = ser.readline().decode('utf-8')
-        if "Ack0" not in answer:
+        if "Ack 0" not in answer:
             common_functions.error_message("Ошибка смены цвета")
     except (serial.SerialException, IndexError, AttributeError):
         common_functions.error_message("Ошибка смены цвета")
@@ -121,12 +122,13 @@ def flash_color(ser, button: int, color1: Tuple[int, int, int], length: int, col
     :return:
     """
     try:
-        command: bytes = bytes("Flash % i, %i %i %i, %i, %i %i %i" %
-                               (button, int(color1[0]), int(color1[1]), int(color1[2]), length, int(color2[0]),
-                                int(color2[1]), int(color2[2])))
+        command_str: str = "Flash %i %i %i %i %i %i %i %i\r\n" % (button, int(color1[0]), int(color1[1]),
+                                                                  int(color1[2]), length, int(color2[0]),
+                                                                  int(color2[1]), int(color2[2]))
+        command: bytes = bytes(command_str, encoding='utf-8')
         ser.write(command)
         answer: ser = ser.readline().decode('utf-8')
-        if "Ack0" not in answer:
+        if "Ack 0" not in answer:
             common_functions.error_message("Ошибка смены цвета")
     except (serial.SerialException, IndexError, AttributeError):
         common_functions.error_message("Ошибка смены цвета")
@@ -140,10 +142,11 @@ def change_color_all(ser, color: Tuple[int, int, int]):
     :return:
     """
     try:
-        command: bytes = bytes("SetClrAll %i %i %i" % (int(color[0]), int(color[1]), int(color[2])))
+        command: bytes = bytes("SetClrAll %i %i %i\r\n"
+                               % (int(color[0]), int(color[1]), int(color[2])), encoding='utf-8')
         ser.write(command)
         answer: ser = ser.readline().decode('utf-8')
-        if "Ack0" not in answer:
+        if "Ack 0" not in answer:
             common_functions.error_message("Ошибка смены цвета")
     except (serial.SerialException, IndexError, AttributeError):
         common_functions.error_message("Ошибка смены цвета")
