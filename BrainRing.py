@@ -43,8 +43,9 @@ class States(Enum):
     QUEST_SELECTED = 2
     ANSWER_READY = 3
     CONTINUE = 4
-    TIMER_STOPPED = 5
-    TIMER_ENDED = 6
+    ANSWERED = 5
+    TIMER_STOPPED = 6
+    TIMER_ENDED = 7
 
 
 class GameState(QtWidgets.QWidget):
@@ -195,6 +196,8 @@ class BrainRing(QtWidgets.QMainWindow, designmain.Ui_MainWindow):
             self.set_state_time_ended()
         if self.state.state == States.ANSWER_READY:
             self.set_state_answer()
+        if self.state.state == States.ANSWERED:
+            self.set_state_answered()
         if self.state.state == States.CONTINUE:
             self.set_state_continue()
 
@@ -327,7 +330,7 @@ class BrainRing(QtWidgets.QMainWindow, designmain.Ui_MainWindow):
         :return:
         """
         self.model.score_question(self.state.command, self.state.category.questions[self.state.question].points)
-        self.state.set_state(States.CAT_SELECTED)
+        self.state.set_state(States.ANSWERED)
         self.state.answer_signal.emit(True)
 
     def btn_false_pressed(self):
@@ -339,6 +342,10 @@ class BrainRing(QtWidgets.QMainWindow, designmain.Ui_MainWindow):
         self.state.answer_signal.emit(False)
 
     def set_state_answer(self):
+        """
+        sets ui state fir answer
+        :return:
+        """
         self.set_color('color_idle')
         # self.state.stop_time()
         self.BtnTimer.setText("Старт")
@@ -347,6 +354,19 @@ class BrainRing(QtWidgets.QMainWindow, designmain.Ui_MainWindow):
         self.BtnTrue.setEnabled(True)
         self.BtnFalse.setEnabled(True)
         self.BtnNext.setEnabled(False)
+        self.BtnTimer.setEnabled(True)
+
+    def set_state_answered(self):
+        """
+        sets ui for answered
+        :return:
+        """
+        self.set_color('color_idle')
+        self.BtnEnd.setEnabled(False)
+        self.BtnNew.setEnabled(True)
+        self.BtnTrue.setEnabled(False)
+        self.BtnFalse.setEnabled(False)
+        self.BtnNext.setEnabled(True)
         self.BtnTimer.setEnabled(True)
 
     def set_state_continue(self):
