@@ -120,6 +120,7 @@ class GameState(QtWidgets.QWidget):
         :param command: id of answering command
         :return:
         """
+
         self.command = command-1
 
     def delete_command(self):
@@ -139,6 +140,7 @@ class BrainRing(QtWidgets.QMainWindow, designmain.Ui_MainWindow):
         self.category_form = None
         self.settings_form = None
         self.port = self.scan_ports()
+        self.set_color("color_idle")
         self.state: GameState = GameState()
         self.state.state_signal.connect(self.state_changed)
 
@@ -155,6 +157,7 @@ class BrainRing(QtWidgets.QMainWindow, designmain.Ui_MainWindow):
         self.BtnEnd.clicked.connect(self.new_category)
         self.BtnTimer.clicked.connect(self.btn_timer_pressed)
         self.BtnTest.clicked.connect(self.btn_test_pressed)
+        self.BtnTrue.clicked.connect(self.btn_true_pressed)
 
         self.model = commanddata.CommandTableModel()
         self.TblCmnd.setModel(self.model)
@@ -249,7 +252,7 @@ class BrainRing(QtWidgets.QMainWindow, designmain.Ui_MainWindow):
         sets controls states when Category Selected
         :return:
         """
-        usbhost.change_color_all(usbhost.state_color_dict['color_idle'])
+        self.set_color('color_idle')
         self.BtnEnd.setEnabled(False)
         self.BtnNew.setEnabled(False)
         self.BtnTrue.setEnabled(False)
@@ -265,7 +268,7 @@ class BrainRing(QtWidgets.QMainWindow, designmain.Ui_MainWindow):
         sets controls state when Question exists
         :return:
         """
-        usbhost.change_color_all(usbhost.state_color_dict['color_answer'])
+        self.set_color('color_answer')
         self.Timer.display(questiondata.question_time)
         self.Timer.setStyleSheet('color: blue')
         self.BtnEnd.setEnabled(True)
@@ -317,20 +320,20 @@ class BrainRing(QtWidgets.QMainWindow, designmain.Ui_MainWindow):
         self.LblCommand.setText("Отвечает команда %i" % button)
         self.LblCommand.setStyleSheet("color: red")
         self.state.set_state(States.ANSWER_READY)
-        self.state.set_command(button)
+        self.state.set_command(self.model.commanddata.get_command_by_button(button))
 
     def btn_true_pressed(self):
         """
         scores a question, sends back scoring signal, sets state to category selected state
         :return:
         """
-        self.model.commanddata.commands[self.state.command].points += \
-            self.state.category.questions[self.state.question].points
-        self.model.commanddata.commands[self.state.command].questions += 1
+        self.model.score_question(self.state.command, self.state.category.questions[self.state.question].points)
+        self.state.set_state(States.CAT_SELECTED)
 
     def set_state_answer(self):
-        usbhost.change_color_all(usbhost.state_color_dict['color_idle'])
+        self.set_color('color_idle')
         self.state.stop_time()
+        self.BtnTimer.setText("Старт")
         self.BtnEnd.setEnabled(True)
         self.BtnNew.setEnabled(False)
         self.BtnTrue.setEnabled(True)
@@ -379,6 +382,19 @@ class BrainRing(QtWidgets.QMainWindow, designmain.Ui_MainWindow):
         else:
             self.statusbar.showMessage("USB2Radio not found")
             return None
+
+    def set_color(self, color_key: str):
+        """
+        opens port, tries to set color, closes port
+        :param color_key: color key to choose color
+        :return:
+        """
+        opened_port = usbhost.open_port(self.port)
+        if not opened_port:
+            common_functions.error_message("Нет связи с кнопками")
+        else:
+            usbhost.change_color_all(opened_port, usbhost.state_color_dict[color_key])
+            usbhost.close_port(opened_port)
 
     def closeEvent(self, event):
         if self.category_form:
