@@ -1,6 +1,6 @@
 # -*- coding: utf-8 -*-
 
-# Form implementation generated from reading ui file 'DesignMain.ui'
+# Form implementation generated from reading ui file 'DesignMain.Ui'
 #
 # Created by: PyQt5 UI code generator 5.11.3
 #
@@ -137,7 +137,7 @@ class Ui_MainWindow(object):
         self.LblTmr.setObjectName("LblTmr")
         self.gridLayout.addWidget(self.LblTmr, 5, 2, 1, 1)
         self.TxtQstn = QtWidgets.QTextBrowser(self.centralwidget)
-        self.TxtQstn.setMinimumSize(QtCore.QSize(700, 150))
+        self.TxtQstn.setMinimumSize(QtCore.QSize(755, 150))
         self.TxtQstn.setMaximumSize(QtCore.QSize(755, 16777215))
         self.TxtQstn.setObjectName("TxtQstn")
         self.gridLayout.addWidget(self.TxtQstn, 3, 0, 1, 3)
