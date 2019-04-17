@@ -363,10 +363,14 @@ class BrainRing(QtWidgets.QMainWindow, designmain.Ui_MainWindow):
         """
         self.set_color('color_idle')
         self.BtnEnd.setEnabled(False)
-        self.BtnNew.setEnabled(True)
+        if self.state.question == len(self.state.category.questions) - 1:
+            self.BtnNew.setEnabled(False)
+            self.BtnNext.setEnabled(False)
+        else:
+            self.BtnNew.setEnabled(True)
+            self.BtnNext.setEnabled(True)
         self.BtnTrue.setEnabled(False)
         self.BtnFalse.setEnabled(False)
-        self.BtnNext.setEnabled(True)
         self.BtnTimer.setEnabled(True)
 
     def set_state_continue(self):
@@ -384,10 +388,7 @@ class BrainRing(QtWidgets.QMainWindow, designmain.Ui_MainWindow):
         """
         self.set_color('color_answer')
         self.BtnEnd.setEnabled(True)
-        if self.state.question == len(self.state.category.questions) - 1:
-            self.BtnNew.setEnabled(False)
-        else:
-            self.BtnNew.setEnabled(True)
+        self.BtnNew.setEnabled(False)
         self.BtnTrue.setEnabled(False)
         self.BtnFalse.setEnabled(False)
         self.BtnNext.setEnabled(False)
@@ -402,7 +403,7 @@ class BrainRing(QtWidgets.QMainWindow, designmain.Ui_MainWindow):
         self.BtnTrue.setEnabled(False)
         self.BtnFalse.setEnabled(False)
         self.BtnFinish.setEnabled(True)
-        self.BtnNew.setEnabled(True)
+        self.BtnNew.setEnabled(False)
         self.BtnNext.setEnabled(False)
         self.BtnTimer.setEnabled(False)
 
