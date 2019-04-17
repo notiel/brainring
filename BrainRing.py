@@ -166,7 +166,7 @@ class BrainRing(QtWidgets.QMainWindow, designmain.Ui_MainWindow):
         self.BtnTrue.clicked.connect(self.btn_true_pressed)
         self.BtnFalse.clicked.connect(self.btn_false_pressed)
 
-        self.model = commanddata.CommandTableModel()
+        self.model: commanddata.CommandTableModel = commanddata.CommandTableModel()
         self.TblCmnd.setModel(self.model)
 
     def menu_open_pressed(self):
