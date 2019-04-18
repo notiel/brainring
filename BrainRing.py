@@ -174,6 +174,8 @@ class BrainRing(QtWidgets.QMainWindow, designmain.Ui_MainWindow):
         self.model: commanddata.CommandTableModel = commanddata.CommandTableModel()
         self.TblCmnd.setModel(self.model)
 
+        self.Timer.display(questiondata.question_time)
+
     def menu_open_pressed(self):
         openfilename = QtWidgets.QFileDialog.getOpenFileName(self, 'Выберите игру', "")[0]
         if openfilename and openfilename.endswith(".xlsx"):
@@ -302,7 +304,7 @@ class BrainRing(QtWidgets.QMainWindow, designmain.Ui_MainWindow):
         """
 
         actual_category: questiondata.Category = self.state.category
-        self.LblDscr.setText("%s\n: Вопрос № %i из %i. Стоимость %i " %
+        self.LblDscr.setText("%s:\nВопрос № %i из %i. Стоимость %i " %
                              (actual_category.name, self.state.question + 1, len(actual_category.questions),
                               actual_category.questions[self.state.question].points))
         self.TxtQstn.setHtml("<!DOCTYPE HTML PUBLIC \"-//W3C//DTD HTML 4.0//EN\" "
