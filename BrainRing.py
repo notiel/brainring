@@ -341,7 +341,7 @@ class BrainRing(QtWidgets.QMainWindow, designmain.Ui_MainWindow):
         :return:
         """
         self.model.score_question(self.state.command, self.state.category.questions[self.state.question].points)
-        if self.state.question == len(self.state.category.questions) - 1:
+        if self.state.question != len(self.state.category.questions) - 1:
             self.state.set_state(States.ANSWERED)
         else:
             self.state.set_state(States.LAST_QUESTION)
@@ -423,7 +423,7 @@ class BrainRing(QtWidgets.QMainWindow, designmain.Ui_MainWindow):
         :return:
         """
         self.set_color('color_idle')
-        self.BtnEnd.setEnabled(False)
+        self.BtnEnd.setEnabled(True)
         self.BtnNew.setEnabled(False)
         self.BtnNext.setEnabled(True)
         self.BtnTrue.setEnabled(False)
