@@ -6,6 +6,7 @@ import designmain
 import settings
 import usbhost
 import common_functions
+import show_table
 import sys
 import os
 from loguru import logger
@@ -44,8 +45,9 @@ class States(Enum):
     ANSWER_READY = 3
     CONTINUE = 4
     ANSWERED = 5
-    TIMER_STOPPED = 6
-    TIMER_ENDED = 7
+    LAST_QUESTION = 6
+    TIMER_STOPPED = 7
+    TIMER_ENDED = 8
 
 
 class GameState(QtWidgets.QWidget):
@@ -94,6 +96,8 @@ class GameState(QtWidgets.QWidget):
         if state == States.TIMER_ENDED:
             self.time = False
         if state == States.ANSWER_READY:
+            self.time = False
+        if state == States.LAST_QUESTION:
             self.time = False
         if state == States.CONTINUE:
             self.time = True
@@ -145,6 +149,7 @@ class BrainRing(QtWidgets.QMainWindow, designmain.Ui_MainWindow):
         self.game = None
         self.category_form = None
         self.settings_form = None
+        self.scoretable = None
         self.port = self.scan_ports()
         self.set_color("color_idle")
         self.state: GameState = GameState()
@@ -198,6 +203,8 @@ class BrainRing(QtWidgets.QMainWindow, designmain.Ui_MainWindow):
             self.set_state_answer()
         if self.state.state == States.ANSWERED:
             self.set_state_answered()
+        if self.state.state == States.LAST_QUESTION:
+            self.set_state_last_question()
         if self.state.state == States.CONTINUE:
             self.set_state_continue()
 
@@ -215,8 +222,12 @@ class BrainRing(QtWidgets.QMainWindow, designmain.Ui_MainWindow):
         shows next question
         :return:
         """
-        self.category_form.stub.setVisible(False)
-        self.state.set_state(States.QUEST_SELECTED)
+        if self.state.state == States.LAST_QUESTION:
+            self.scoretable = show_table.CommandCount(self.model)
+            self.scoretable.show()
+        else:
+            self.category_form.stub.setVisible(False)
+            self.state.set_state(States.QUEST_SELECTED)
 
     def close_question(self):
         """
@@ -291,7 +302,7 @@ class BrainRing(QtWidgets.QMainWindow, designmain.Ui_MainWindow):
         """
 
         actual_category: questiondata.Category = self.state.category
-        self.LblDscr.setText("%s: Вопрос № %i из %i. Стоимость %i " %
+        self.LblDscr.setText("%s\n: Вопрос № %i из %i. Стоимость %i " %
                              (actual_category.name, self.state.question + 1, len(actual_category.questions),
                               actual_category.questions[self.state.question].points))
         self.TxtQstn.setHtml("<!DOCTYPE HTML PUBLIC \"-//W3C//DTD HTML 4.0//EN\" "
@@ -330,7 +341,10 @@ class BrainRing(QtWidgets.QMainWindow, designmain.Ui_MainWindow):
         :return:
         """
         self.model.score_question(self.state.command, self.state.category.questions[self.state.question].points)
-        self.state.set_state(States.ANSWERED)
+        if self.state.question == len(self.state.category.questions) - 1:
+            self.state.set_state(States.ANSWERED)
+        else:
+            self.state.set_state(States.LAST_QUESTION)
         self.state.answer_signal.emit(True)
 
     def btn_false_pressed(self):
@@ -363,12 +377,8 @@ class BrainRing(QtWidgets.QMainWindow, designmain.Ui_MainWindow):
         """
         self.set_color('color_idle')
         self.BtnEnd.setEnabled(False)
-        if self.state.question == len(self.state.category.questions) - 1:
-            self.BtnNew.setEnabled(False)
-            self.BtnNext.setEnabled(False)
-        else:
-            self.BtnNew.setEnabled(True)
-            self.BtnNext.setEnabled(True)
+        self.BtnNew.setEnabled(True)
+        self.BtnNext.setEnabled(True)
         self.BtnTrue.setEnabled(False)
         self.BtnFalse.setEnabled(False)
         self.BtnTimer.setEnabled(True)
@@ -406,6 +416,20 @@ class BrainRing(QtWidgets.QMainWindow, designmain.Ui_MainWindow):
         self.BtnNew.setEnabled(False)
         self.BtnNext.setEnabled(False)
         self.BtnTimer.setEnabled(False)
+
+    def set_state_last_question(self):
+        """
+        sets ui for last question (next question not available)
+        :return:
+        """
+        self.set_color('color_idle')
+        self.BtnEnd.setEnabled(False)
+        self.BtnNew.setEnabled(False)
+        self.BtnNext.setEnabled(True)
+        self.BtnTrue.setEnabled(False)
+        self.BtnFalse.setEnabled(False)
+        self.BtnTimer.setEnabled(True)
+
 
     def btn_test_pressed(self):
         """

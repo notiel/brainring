@@ -11,7 +11,7 @@ from PyQt5 import QtCore, QtGui, QtWidgets
 class Ui_MainWindow(object):
     def setupUi(self, MainWindow):
         MainWindow.setObjectName("MainWindow")
-        MainWindow.resize(1330, 922)
+        MainWindow.resize(1330, 904)
         MainWindow.setMinimumSize(QtCore.QSize(1330, 0))
         MainWindow.setMaximumSize(QtCore.QSize(1330, 16777215))
         self.centralwidget = QtWidgets.QWidget(MainWindow)
@@ -94,12 +94,13 @@ class Ui_MainWindow(object):
         self.LblTmr.setObjectName("LblTmr")
         self.gridLayout.addWidget(self.LblTmr, 5, 2, 1, 1)
         self.LblDscr = QtWidgets.QLabel(self.centralwidget)
+        self.LblDscr.setMinimumSize(QtCore.QSize(0, 45))
         self.LblDscr.setMaximumSize(QtCore.QSize(16777215, 20))
         font = QtGui.QFont()
         font.setPointSize(12)
         self.LblDscr.setFont(font)
         self.LblDscr.setObjectName("LblDscr")
-        self.gridLayout.addWidget(self.LblDscr, 0, 0, 1, 1)
+        self.gridLayout.addWidget(self.LblDscr, 0, 0, 1, 1, QtCore.Qt.AlignTop)
         self.Timer = QtWidgets.QLCDNumber(self.centralwidget)
         self.Timer.setContextMenuPolicy(QtCore.Qt.ActionsContextMenu)
         self.Timer.setStyleSheet("color: rgb(0, 0, 255)")
