@@ -14,7 +14,7 @@ class Commands:
 
     def get_command_by_button(self, button: int) -> int:
         """
-        gets command name by id of button
+        gets command id by id of button
         :param button:
         :return:
         """
@@ -139,3 +139,36 @@ class CommandTableModel(QAbstractTableModel):
         self.commanddata.commands[command].points += points
         self.commanddata.commands[command].questions += 1
         self.dataChanged.emit(QModelIndex(), QModelIndex())
+
+    def setData(self, idx, value, role=None):
+        """
+        replaces set data standart function
+        :param idx: index of changed data
+        :param value: new value
+        :param role: role (editing)
+        :return:
+        """
+        if role == Qt.EditRole:
+            command_id = idx.row()
+            if idx.column() == 0:
+                self.commanddata.commands[command_id].name = value
+            if idx.column() == 1:
+                try:
+                    self.commanddata.commands[command_id].questions = int(value)
+                except ValueError:
+                    pass
+            if idx.column() == 2:
+                try:
+                    self.commanddata.commands[command_id].points = int(value)
+                except ValueError:
+                    pass
+            return True
+        return False
+
+    def flags(self, idx):
+        """
+        special function to support editing
+        :param idx:
+        :return: flags for editing
+        """
+        return Qt.ItemIsEditable | QAbstractTableModel.flags(self, idx)

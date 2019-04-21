@@ -87,8 +87,9 @@ class QuestionDialog(QtWidgets.QWidget, question.Ui_Form):
             button: int = usbhost.get_first_button(self.opened_port, "answer")
             print(button)
             if button:
-                self.BtnAnswer.setText("Отвечает команда %i" %
-                                       (self.model.commanddata.get_command_by_button(button) + 1))
+                commands = self.model.commanddata
+                self.BtnAnswer.setText("Отвечает команда «%s»" %
+                                       commands.commands[commands.get_command_by_button(button)].name)
                 self.BtnAnswer.setStyleSheet("color: red")
                 self.scanning = False
                 usbhost.close_port(self.opened_port)

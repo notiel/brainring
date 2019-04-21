@@ -334,7 +334,7 @@ class BrainRing(QtWidgets.QMainWindow, designmain.Ui_MainWindow):
         """
         self.state.set_state(States.ANSWER_READY)
         self.state.set_command(self.model.commanddata.get_command_by_button(button))
-        self.LblCommand.setText("Отвечает команда %i" % (self.state.command+1))
+        self.LblCommand.setText("Отвечает команда «%s»" % self.model.commanddata.commands[self.state.command].name)
         self.LblCommand.setStyleSheet("color: red")
 
     def btn_true_pressed(self):
