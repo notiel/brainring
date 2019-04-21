@@ -1,6 +1,6 @@
 # -*- coding: utf-8 -*-
 
-# Form implementation generated from reading ui file 'DesignMain.Ui'
+# Form implementation generated from reading ui file 'DesignMain.ui'
 #
 # Created by: PyQt5 UI code generator 5.11.3
 #
@@ -11,7 +11,7 @@ from PyQt5 import QtCore, QtGui, QtWidgets
 class Ui_MainWindow(object):
     def setupUi(self, MainWindow):
         MainWindow.setObjectName("MainWindow")
-        MainWindow.resize(1330, 904)
+        MainWindow.resize(1330, 921)
         MainWindow.setMinimumSize(QtCore.QSize(1330, 0))
         MainWindow.setMaximumSize(QtCore.QSize(1330, 16777215))
         self.centralwidget = QtWidgets.QWidget(MainWindow)
@@ -26,12 +26,6 @@ class Ui_MainWindow(object):
         self.BtnFinish.setFont(font)
         self.BtnFinish.setObjectName("BtnFinish")
         self.gridLayout.addWidget(self.BtnFinish, 7, 1, 1, 1)
-        self.LblAnswer = QtWidgets.QLabel(self.centralwidget)
-        font = QtGui.QFont()
-        font.setPointSize(12)
-        self.LblAnswer.setFont(font)
-        self.LblAnswer.setObjectName("LblAnswer")
-        self.gridLayout.addWidget(self.LblAnswer, 4, 0, 1, 1)
         self.LblPnts = QtWidgets.QLabel(self.centralwidget)
         self.LblPnts.setMinimumSize(QtCore.QSize(0, 28))
         font = QtGui.QFont()
@@ -93,14 +87,6 @@ class Ui_MainWindow(object):
         self.LblTmr.setFont(font)
         self.LblTmr.setObjectName("LblTmr")
         self.gridLayout.addWidget(self.LblTmr, 5, 2, 1, 1)
-        self.LblDscr = QtWidgets.QLabel(self.centralwidget)
-        self.LblDscr.setMinimumSize(QtCore.QSize(0, 45))
-        self.LblDscr.setMaximumSize(QtCore.QSize(16777215, 20))
-        font = QtGui.QFont()
-        font.setPointSize(12)
-        self.LblDscr.setFont(font)
-        self.LblDscr.setObjectName("LblDscr")
-        self.gridLayout.addWidget(self.LblDscr, 0, 0, 1, 1, QtCore.Qt.AlignTop)
         self.Timer = QtWidgets.QLCDNumber(self.centralwidget)
         self.Timer.setContextMenuPolicy(QtCore.Qt.ActionsContextMenu)
         self.Timer.setStyleSheet("color: rgb(0, 0, 255)")
@@ -144,6 +130,20 @@ class Ui_MainWindow(object):
         self.TblCmnd.setMidLineWidth(2)
         self.TblCmnd.setObjectName("TblCmnd")
         self.gridLayout.addWidget(self.TblCmnd, 2, 3, 2, 2)
+        self.LblAnswer = QtWidgets.QLabel(self.centralwidget)
+        font = QtGui.QFont()
+        font.setPointSize(12)
+        self.LblAnswer.setFont(font)
+        self.LblAnswer.setObjectName("LblAnswer")
+        self.gridLayout.addWidget(self.LblAnswer, 4, 0, 1, 3)
+        self.LblDscr = QtWidgets.QLabel(self.centralwidget)
+        self.LblDscr.setMinimumSize(QtCore.QSize(0, 45))
+        self.LblDscr.setMaximumSize(QtCore.QSize(16777215, 20))
+        font = QtGui.QFont()
+        font.setPointSize(12)
+        self.LblDscr.setFont(font)
+        self.LblDscr.setObjectName("LblDscr")
+        self.gridLayout.addWidget(self.LblDscr, 0, 0, 1, 3)
         MainWindow.setCentralWidget(self.centralwidget)
         self.menubar = QtWidgets.QMenuBar(MainWindow)
         self.menubar.setGeometry(QtCore.QRect(0, 0, 1330, 26))
@@ -172,7 +172,6 @@ class Ui_MainWindow(object):
         _translate = QtCore.QCoreApplication.translate
         MainWindow.setWindowTitle(_translate("MainWindow", "Шевели извилиной"))
         self.BtnFinish.setText(_translate("MainWindow", "Завершить вопрос"))
-        self.LblAnswer.setText(_translate("MainWindow", "Ответ: "))
         self.LblPnts.setText(_translate("MainWindow", "Счет команд:"))
         self.BtnEnd.setText(_translate("MainWindow", "Новый раунд"))
         self.BtnTrue.setText(_translate("MainWindow", "Верный ответ"))
@@ -181,7 +180,6 @@ class Ui_MainWindow(object):
         self.BtnNext.setText(_translate("MainWindow", "Далее"))
         self.LblCommand.setText(_translate("MainWindow", "Отвечает команда: "))
         self.LblTmr.setText(_translate("MainWindow", "Оставшееся время:"))
-        self.LblDscr.setText(_translate("MainWindow", "Тема не выбрана"))
         self.BtnTest.setText(_translate("MainWindow", "Тест кнопок"))
         self.BtnTimer.setText(_translate("MainWindow", "Старт"))
         self.TxtQstn.setHtml(_translate("MainWindow", "<!DOCTYPE HTML PUBLIC \"-//W3C//DTD HTML 4.0//EN\" \"http://www.w3.org/TR/REC-html40/strict.dtd\">\n"
@@ -189,6 +187,8 @@ class Ui_MainWindow(object):
 "p, li { white-space: pre-wrap; }\n"
 "</style></head><body style=\" font-family:\'MS Shell Dlg 2\'; font-size:7.8pt; font-weight:400; font-style:normal;\">\n"
 "<p style=\"-qt-paragraph-type:empty; margin-top:0px; margin-bottom:0px; margin-left:0px; margin-right:0px; -qt-block-indent:0; text-indent:0px; font-size:8pt;\"><br /></p></body></html>"))
+        self.LblAnswer.setText(_translate("MainWindow", "Ответ: "))
+        self.LblDscr.setText(_translate("MainWindow", "Тема не выбрана"))
         self.Game.setTitle(_translate("MainWindow", "Игра"))
         self.Settings.setTitle(_translate("MainWindow", "Настройки"))
         self.Settings_2.setText(_translate("MainWindow", "Настройки"))
