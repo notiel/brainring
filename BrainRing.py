@@ -1,4 +1,4 @@
-MOCKED = True
+MOCKED = False
 
 if not MOCKED:
     import usbhost
@@ -158,6 +158,11 @@ class BrainRing(QtWidgets.QMainWindow, designmain.Ui_MainWindow):
         self.category_form = None
         self.settings_form = None
         self.scoretable = None
+        if MOCKED:
+            import mock
+            mock.amock_init()
+            self.mock = mock.amock
+            self.mock.show()
         self.port = self.scan_ports()
         self.set_color("color_idle")
         self.state: GameState = GameState()
@@ -183,10 +188,7 @@ class BrainRing(QtWidgets.QMainWindow, designmain.Ui_MainWindow):
         self.TblCmnd.setModel(self.model)
 
         self.Timer.display(questiondata.question_time)
-        if MOCKED:
-            import mock
-            self.mock = mock.amock
-            self.mock.show()
+
 
     def menu_open_pressed(self):
         openfilename = QtWidgets.QFileDialog.getOpenFileName(self, 'Выберите игру', "")[0]

@@ -12,6 +12,7 @@ pause_ms = 500
 
 def scan_ports() -> Optional[str]:
     """
+    #TODO fix description, returns a single comport answered, not list
     scans COM ports and returns their list
     :return: list of available COM ports
     """

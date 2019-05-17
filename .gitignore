@@ -3,5 +3,7 @@ __*
 build/
 dist/
 *.spec
-*.xlsx
+/*.xlsx
 !/.gitignore
+!/tests/Example.xlsx
+!/tests/Real.xlsx
