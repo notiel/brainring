@@ -1,8 +1,14 @@
+MOCKED = False
+
+if not MOCKED:
+    import usbhost
+else:
+    import mock as usbhost
+
 import question
 from PyQt5 import QtWidgets, QtCore, QtGui
 import questiondata
 import common_functions
-import usbhost
 import os
 
 

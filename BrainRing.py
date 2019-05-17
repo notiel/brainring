@@ -1,10 +1,17 @@
+MOCKED = False
+
+if not MOCKED:
+    import usbhost
+else:
+    import mock as usbhost
+
 import questiondata
 import category
 import question_opened
 import commanddata
 import designmain
 import settings
-import usbhost
+
 import common_functions
 import show_table
 import sys
@@ -13,6 +20,7 @@ from loguru import logger
 from PyQt5 import QtWidgets, QtCore
 from enum import Enum
 from typing import Optional
+
 
 
 def setup_exception_logging():
@@ -150,6 +158,11 @@ class BrainRing(QtWidgets.QMainWindow, designmain.Ui_MainWindow):
         self.category_form = None
         self.settings_form = None
         self.scoretable = None
+        if MOCKED:
+            import mock
+            mock.amock_init()
+            self.mock = mock.amock
+            self.mock.show()
         self.port = self.scan_ports()
         self.set_color("color_idle")
         self.state: GameState = GameState()
@@ -175,6 +188,7 @@ class BrainRing(QtWidgets.QMainWindow, designmain.Ui_MainWindow):
         self.TblCmnd.setModel(self.model)
 
         self.Timer.display(questiondata.question_time)
+
 
     def menu_open_pressed(self):
         openfilename = QtWidgets.QFileDialog.getOpenFileName(self, 'Выберите игру', "")[0]
@@ -431,7 +445,6 @@ class BrainRing(QtWidgets.QMainWindow, designmain.Ui_MainWindow):
         self.BtnTrue.setEnabled(False)
         self.BtnFalse.setEnabled(False)
         self.BtnTimer.setEnabled(True)
-
 
     def btn_test_pressed(self):
         """
