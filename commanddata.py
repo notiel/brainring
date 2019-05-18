@@ -23,6 +23,13 @@ class Commands:
                 return self.commands.index(cmd)
         return -1
 
+    def get_available_commands_list(self):
+        """
+        returns ids of buttons that are available
+        :return:
+        """
+        return [cmd.button_id for cmd in self.commands if cmd.available]
+
 @dataclass
 class Command:
     button_id: int

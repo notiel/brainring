@@ -59,3 +59,20 @@ def get_first_button_from_answer(answer: str) -> Optional[int]:
     if buttons_list:
         return buttons_list[0][0]
     return None
+
+
+def update_button_list(usbhost, buttons: List[int])->str:
+    """
+    updates button list for host
+    :param usbhost: serial port with host
+    :param buttons: list of available buttons
+    :return: error or empty string
+    """
+    port: str = usbhost.get_device_port()
+    if not port:
+        return "Ошибка связи с устройством"
+    opened_port = usbhost.open_port(port)
+    answer = usbhost.send_query("SetBtnList", *buttons)
+    if answer in wrong_answers:
+        return answer_translate[answer]
+    return ""

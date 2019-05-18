@@ -163,6 +163,7 @@ class BrainRing(QtWidgets.QMainWindow, designmain.Ui_MainWindow):
             self.mock = mock.amock
             self.mock.show()
         self.port = self.scan_ports()
+        common_functions.update_button_list(usbhost, [1, 2, 3, 4])
         self.set_color("color_idle")
         self.state: GameState = GameState()
         self.state.state_signal.connect(self.state_changed)

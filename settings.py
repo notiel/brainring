@@ -69,6 +69,7 @@ class Settings(QtWidgets.QWidget, settings_ui.Ui_Settings):
             self.commanddata.enable_command(i)
         else:
             self.commanddata.disable_command(i)
+        common_functions.update_button_list(self.usbhost, self.commanddata.commanddata.get_available_commands_list())
 
     def button_selected(self):
         """
