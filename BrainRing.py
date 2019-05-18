@@ -68,7 +68,6 @@ class GameState(QtWidgets.QWidget):
         self.category: Optional[questiondata.Category] = None
         self.question: int = -1
         self.command: int = -1
-        self.usbhost = usbhost.UsbHost()
 
     def set_game(self, game: questiondata.Game):
         """
@@ -157,6 +156,7 @@ class BrainRing(QtWidgets.QMainWindow, designmain.Ui_MainWindow):
         self.category_form = None
         self.settings_form = None
         self.scoretable = None
+        self.usbhost = usbhost.UsbHost()
         if MOCKED:
             import mock
             mock.amock_init()
