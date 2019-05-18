@@ -18,7 +18,7 @@ class Mock(QWidget):
         self.height = 100
         self.initUI()
         self.move(200, 200)
-        #self.state = 0
+        self.state = None
 
     def initUI(self):
         self.setWindowTitle(self.title)
@@ -60,8 +60,10 @@ class Mock(QWidget):
         self.state = None
 
 
-amock =None
+amock = None
 mockbutton = dict()
+
+
 def amock_init():
     global amock
     amock = Mock()

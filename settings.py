@@ -1,10 +1,3 @@
-MOCKED = False
-
-if not MOCKED:
-    import usbhost
-else:
-    import mock as usbhost
-
 import settings_ui
 import commanddata
 import questiondata
@@ -18,7 +11,7 @@ retry_number = 20
 
 class Settings(QtWidgets.QWidget, settings_ui.Ui_Settings):
 
-    def __init__(self, commandmodel, port):
+    def __init__(self, commandmodel, port, my_usbhost):
         super().__init__()
         self.setupUi(self)
         self.SpinBefore.setValue(questiondata.time_low_threshold)
@@ -31,6 +24,7 @@ class Settings(QtWidgets.QWidget, settings_ui.Ui_Settings):
         self.timer = QtCore.QTimer()
         self.timer.timeout.connect(self.timerEvent)
         self.timer.start(500)
+        self.usbhost = my_usbhost
 
         self.commanddata: commanddata.CommandTableModel = commandmodel
         self.checklist: List[QtWidgets.QCheckBox] = [self.CB1, self.CB2, self.CB3, self.CB4, self.CB5, self.CB6,
@@ -115,17 +109,17 @@ class Settings(QtWidgets.QWidget, settings_ui.Ui_Settings):
         enables timer if any button pressed, button is remembered in self.testing variable
         :return:
         """
-        self.opened_port = usbhost.open_port(self.port)
+        self.opened_port = self.usbhost.open_port(self.port)
         if not self.opened_port:
-            self.port = usbhost.scan_ports()
+            self.port = self.usbhost.get_device_port()
             if not self.port:
                 common_functions.error_message("Нет подключенных кнопок")
                 return
             else:
-                self.opened_port = usbhost.open_port(self.port)
-        error = usbhost.reset_timer(self.opened_port)
-        if error:
-            common_functions.error_message(error)
+                self.opened_port = self.usbhost.open_port(self.port)
+        error = self.usbhost.send_command(self.opened_port, "rsttmr")
+        if error in common_functions.wrong_answers:
+            common_functions.error_message(common_functions.answer_translate[error])
             return
         self.testing = self.sender()
         self.scanning = True
@@ -143,7 +137,7 @@ class Settings(QtWidgets.QWidget, settings_ui.Ui_Settings):
             caption = self.LblInstruction.text() + "."
             self.LblInstruction.setText(caption)
             self.retries += 1
-            button: int = usbhost.get_first_button(self.opened_port, "idle")
+            button: int = common_functions.get_first_button(self.usbhost, self.opened_port, "idle")
             if button:
                 self.CBlist[self.btnlist.index(self.testing)].setCurrentText("Кнопка %i" % button)
                 self.state_not_scanning()
@@ -158,6 +152,6 @@ class Settings(QtWidgets.QWidget, settings_ui.Ui_Settings):
         :return:
         """
         self.scanning = False
-        usbhost.close_port(self.opened_port)
+        self.usbhost.close_port(self.opened_port)
         self.opened_port = None
         self.LblInstruction.setText("Нажмите на кнопку с именем команды для автоопределения")

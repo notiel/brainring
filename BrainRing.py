@@ -1,10 +1,3 @@
-MOCKED = False
-
-if not MOCKED:
-    import usbhost
-else:
-    import mock as usbhost
-
 import questiondata
 import category
 import question_opened
@@ -19,8 +12,13 @@ import os
 from loguru import logger
 from PyQt5 import QtWidgets, QtCore
 from enum import Enum
-from typing import Optional
+from typing import Optional, List
 
+MOCKED = False
+if not MOCKED:
+    import usbhost
+else:
+    import mock as usbhost
 
 
 def setup_exception_logging():
@@ -70,6 +68,7 @@ class GameState(QtWidgets.QWidget):
         self.category: Optional[questiondata.Category] = None
         self.question: int = -1
         self.command: int = -1
+        self.usbhost = usbhost.UsbHost()
 
     def set_game(self, game: questiondata.Game):
         """
@@ -188,7 +187,6 @@ class BrainRing(QtWidgets.QMainWindow, designmain.Ui_MainWindow):
         self.TblCmnd.setModel(self.model)
 
         self.Timer.display(questiondata.question_time)
-
 
     def menu_open_pressed(self):
         openfilename = QtWidgets.QFileDialog.getOpenFileName(self, 'Выберите игру', "")[0]
@@ -334,7 +332,7 @@ class BrainRing(QtWidgets.QMainWindow, designmain.Ui_MainWindow):
                              % actual_category.questions[self.state.question].description)
         self.LblAnswer.setText(actual_category.questions[self.state.question].answer)
         self.category_form.question = question_opened.QuestionDialog(actual_category, self.state.question, self.port,
-                                                                     self.model)
+                                                                     self.model, self.usbhost)
         self.category_form.question.question_signal[int].connect(self.cmd_button_pressed)
         self.state.answer_signal[bool].connect(self.category_form.question.answer_processed)
         self.category_form.question.show()
@@ -460,7 +458,7 @@ class BrainRing(QtWidgets.QMainWindow, designmain.Ui_MainWindow):
 
     def menu_settings_pressed(self):
         self.port = self.scan_ports()
-        self.settings_form = settings.Settings(self.model, self.port)
+        self.settings_form = settings.Settings(self.model, self.port, self.usbhost)
         self.settings_form.show()
 
     def scan_ports(self) -> Optional[str]:
@@ -468,7 +466,7 @@ class BrainRing(QtWidgets.QMainWindow, designmain.Ui_MainWindow):
         returns comport with our radiodevice and updates statusbar
         :return: comport as "COMX" or None
         """
-        radioport = usbhost.scan_ports()
+        radioport = self.usbhost.get_device_port()
         if radioport:
             self.statusbar.showMessage("Usb2Radio at port %s is available" % radioport)
             return radioport
@@ -482,12 +480,15 @@ class BrainRing(QtWidgets.QMainWindow, designmain.Ui_MainWindow):
         :param color_key: color key to choose color
         :return:
         """
-        opened_port = usbhost.open_port(self.port)
+        opened_port = self.usbhost.open_port(self.port)
         if not opened_port:
             common_functions.error_message("Нет связи с кнопками")
         else:
-            usbhost.change_color_all(opened_port, usbhost.state_color_dict[color_key])
-            usbhost.close_port(opened_port)
+            clr: List[int] = common_functions.state_color_dict[color_key]
+            answer: str = self.usbhost.send_command(opened_port, "SetClrAll", clr[0], clr[1], clr[2])
+            if answer in common_functions.wrong_answers:
+                self.statusbar.showMessage(common_functions.answer_translate[answer])
+            self.usbhost.close_port(opened_port)
 
     def closeEvent(self, event):
         if self.category_form:
