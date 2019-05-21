@@ -9,7 +9,7 @@ class QuestionDialog(QtWidgets.QWidget, question.Ui_Form):
 
     question_signal = QtCore.pyqtSignal(int)
 
-    def __init__(self, category: questiondata.Category, number, port, model, my_usbhost):
+    def __init__(self, category: questiondata.Category, number, port, model, my_usbhost, used_buttons):
         super().__init__()
         self.setupUi(self)
         self.count: int = 0
@@ -18,6 +18,7 @@ class QuestionDialog(QtWidgets.QWidget, question.Ui_Form):
         self.opened_port = None
         self.scanning = False
         self.usbhost = my_usbhost
+        self.used_buttons = used_buttons
 
         self.timer = QtCore.QTimer()
         self.timer.timeout.connect(self.timerEvent)
@@ -49,8 +50,10 @@ class QuestionDialog(QtWidgets.QWidget, question.Ui_Form):
         if filepath:
             if os.path.exists(filepath) and (filepath.endswith(".jpg") or filepath.endswith('.png')):
                 self.image = ImageShow(filepath)
+            elif os.path.exists(filepath) and filepath.endswith('.mp3'):
+                os.system(r"start %s" % filepath)
             else:
-                common_functions.error_message("Файла с картинкой не существует")
+                common_functions.error_message("Файла с медиаконтентом не существует или формат неверный")
 
     def open_port(self):
         """
@@ -83,7 +86,7 @@ class QuestionDialog(QtWidgets.QWidget, question.Ui_Form):
                 self.LCDTimer.display(current - 1)
                 if current == questiondata.time_low_threshold + 1:
                     self.LCDTimer.setStyleSheet("color: red")
-            button: int = common_functions.get_first_button(self.usbhost, self.opened_port, "answer")
+            button: int = common_functions.get_first_button(self.usbhost, self.opened_port, "answer", self.used_buttons)
             print(button)
             if button != -1:
                 commands = self.model.commanddata

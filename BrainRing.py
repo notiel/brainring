@@ -54,6 +54,7 @@ class States(Enum):
     LAST_QUESTION = 6
     TIMER_STOPPED = 7
     TIMER_ENDED = 8
+    TEST_BUTTON = 9
 
 
 class GameState(QtWidgets.QWidget):
@@ -68,6 +69,8 @@ class GameState(QtWidgets.QWidget):
         self.category: Optional[questiondata.Category] = None
         self.question: int = -1
         self.command: int = -1
+        self.commands_answered: List = list()
+        self.last_state = None
 
     def set_game(self, game: questiondata.Game):
         """
@@ -92,10 +95,10 @@ class GameState(QtWidgets.QWidget):
         :param state: new state
         :return:
         """
-        self.state = state
         if state == States.QUEST_SELECTED:
             self.time = True
             self.next_question()
+            self.commands_answered = list()
         if state == States.CAT_SELECTED:
             self.time = False
             self.question = -1
@@ -105,8 +108,13 @@ class GameState(QtWidgets.QWidget):
             self.time = False
         if state == States.LAST_QUESTION:
             self.time = False
+            self.commands_answered = list()
         if state == States.CONTINUE:
             self.time = True
+        if state == States.TEST_BUTTON:
+            self.time = False
+            self.last_state = self.state
+        self.state = state
         self.state_signal.emit()
 
     def next_question(self):
@@ -146,6 +154,14 @@ class GameState(QtWidgets.QWidget):
         """
         self.command = -1
 
+    def add_command_answered(self, command: int):
+        """
+        ads command by number to list of answered commands
+        :param command:
+        :return:
+        """
+        self.commands_answered.append(command)
+
 
 class BrainRing(QtWidgets.QMainWindow, designmain.Ui_MainWindow):
 
@@ -163,7 +179,7 @@ class BrainRing(QtWidgets.QMainWindow, designmain.Ui_MainWindow):
             self.mock = mock.amock
             self.mock.show()
         self.port = self.scan_ports()
-        common_functions.update_button_list(usbhost, [1, 2, 3, 4])
+        common_functions.update_button_list(self.usbhost, [1, 2, 3, 4])
         self.set_color("color_idle")
         self.state: GameState = GameState()
         self.state.state_signal.connect(self.state_changed)
@@ -183,6 +199,7 @@ class BrainRing(QtWidgets.QMainWindow, designmain.Ui_MainWindow):
         self.BtnTest.clicked.connect(self.btn_test_pressed)
         self.BtnTrue.clicked.connect(self.btn_true_pressed)
         self.BtnFalse.clicked.connect(self.btn_false_pressed)
+
 
         self.model: commanddata.CommandTableModel = commanddata.CommandTableModel()
         self.TblCmnd.setModel(self.model)
@@ -222,6 +239,8 @@ class BrainRing(QtWidgets.QMainWindow, designmain.Ui_MainWindow):
             self.set_state_last_question()
         if self.state.state == States.CONTINUE:
             self.set_state_continue()
+        if self.state.state == States.TEST_BUTTON:
+            self.set_state_testbutton()
 
     def category_selected(self, category_passed):
         """
@@ -271,7 +290,12 @@ class BrainRing(QtWidgets.QMainWindow, designmain.Ui_MainWindow):
                     self.Timer.setStyleSheet("color: red")
             else:
                 self.state.set_state(States.TIMER_ENDED)
-
+        if self.state.time == States.TEST_BUTTON:
+            button = common_functions.get_first_button(self.usbhost, 'idle', list())
+            if button:
+                command_name = self.model.commanddata.get_command_by_button(button)
+                QtWidgets.QMessageBox(self, 'Нажата кнопка', "Нажата кнопка команды %s" % command_name,
+                                      QtWidgets.QMessageBox.Ok)
     def btn_timer_pressed(self):
         """
         starts and stops timer at any moment
@@ -333,7 +357,8 @@ class BrainRing(QtWidgets.QMainWindow, designmain.Ui_MainWindow):
                              % actual_category.questions[self.state.question].description)
         self.LblAnswer.setText(actual_category.questions[self.state.question].answer)
         self.category_form.question = question_opened.QuestionDialog(actual_category, self.state.question, self.port,
-                                                                     self.model, self.usbhost)
+                                                                     self.model, self.usbhost,
+                                                                     self.state.commands_answered)
         self.category_form.question.question_signal[int].connect(self.cmd_button_pressed)
         self.state.answer_signal[bool].connect(self.category_form.question.answer_processed)
         self.category_form.question.show()
@@ -368,7 +393,19 @@ class BrainRing(QtWidgets.QMainWindow, designmain.Ui_MainWindow):
         :return:
         """
         self.state.set_state(States.CONTINUE)
+        self.state.add_command_answered(self.state.command)
         self.state.answer_signal.emit(False)
+
+    def btn_test_pressed(self):
+        """
+        test of buttons
+        :return:
+        """
+        if self.state.state != States.TEST_BUTTON:
+            self.state.set_state(States.TEST_BUTTON)
+        else:
+            self.BtnTest.setText("Тест кнопок")
+            self.state.set_state(self.state.last_state)
 
     def set_state_answer(self):
         """
@@ -384,6 +421,7 @@ class BrainRing(QtWidgets.QMainWindow, designmain.Ui_MainWindow):
         self.BtnFalse.setEnabled(True)
         self.BtnNext.setEnabled(False)
         self.BtnTimer.setEnabled(True)
+        self.BtnTest.setEnabled(True)
 
     def set_state_answered(self):
         """
@@ -397,6 +435,7 @@ class BrainRing(QtWidgets.QMainWindow, designmain.Ui_MainWindow):
         self.BtnTrue.setEnabled(False)
         self.BtnFalse.setEnabled(False)
         self.BtnTimer.setEnabled(True)
+        self.BtnTest.setEnabled(True)
 
     def set_state_continue(self):
         """
@@ -419,6 +458,7 @@ class BrainRing(QtWidgets.QMainWindow, designmain.Ui_MainWindow):
         self.BtnNext.setEnabled(False)
         self.BtnTimer.setEnabled(True)
         self.BtnTimer.setText('Стоп')
+        self.BtnTest.setEnabled(True)
 
     def set_state_time_ended(self):
         """
@@ -431,6 +471,7 @@ class BrainRing(QtWidgets.QMainWindow, designmain.Ui_MainWindow):
         self.BtnNew.setEnabled(False)
         self.BtnNext.setEnabled(False)
         self.BtnTimer.setEnabled(False)
+        self.BtnTest.setEnabled(False)
 
     def set_state_last_question(self):
         """
@@ -444,18 +485,21 @@ class BrainRing(QtWidgets.QMainWindow, designmain.Ui_MainWindow):
         self.BtnTrue.setEnabled(False)
         self.BtnFalse.setEnabled(False)
         self.BtnTimer.setEnabled(True)
+        self.BtnTest.setEnabled(True)
 
-    def btn_test_pressed(self):
+    def set_state_testbutton(self):
         """
-        rescan ports and shows pressed buttons for all command
+        sets control states to test button mode
         :return:
         """
-        self.port = self.scan_ports()
-        if self.port:
-            # will be done later
-            pass
-        else:
-            common_functions.error_message("Нет связи с кнопками")
+        self.BtnEnd.setEnabled(False)
+        self.BtnNew.setEnabled(False)
+        self.BtnNext.setEnabled(False)
+        self.BtnTrue.setEnabled(False)
+        self.BtnFalse.setEnabled(False)
+        self.BtnTimer.setEnabled(False)
+        self.BtnFinish.setEnabled(False)
+        self.BtnTest.setText("Тест начат")
 
     def menu_settings_pressed(self):
         self.port = self.scan_ports()

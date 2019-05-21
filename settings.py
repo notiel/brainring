@@ -138,7 +138,7 @@ class Settings(QtWidgets.QWidget, settings_ui.Ui_Settings):
             caption = self.LblInstruction.text() + "."
             self.LblInstruction.setText(caption)
             self.retries += 1
-            button: int = common_functions.get_first_button(self.usbhost, self.opened_port, "idle")
+            button: int = common_functions.get_first_button(self.usbhost, self.opened_port, "idle", list())
             if button:
                 self.CBlist[self.btnlist.index(self.testing)].setCurrentText("Кнопка %i" % button)
                 self.state_not_scanning()
