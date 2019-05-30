@@ -34,8 +34,7 @@ class UsbHost:
         """
         return [comport.device for comport in serial.tools.list_ports.comports()]
 
-    @staticmethod
-    def get_device_port() -> Optional[str]:
+    def get_device_port(self) -> Optional[str]:
         """
         scans COM ports and returns first found ostranna device port
         :return: port with ostranna device or None
@@ -44,7 +43,7 @@ class UsbHost:
         for comport in devices:
             try:
                 # find comport with our device
-                ser = serial.Serial(comport, timeout=0.2)
+                ser = self.open_port(comport)
                 command: bytes = bytes("ping\r\n", encoding='utf-8')
                 ser.write(command)
                 answer: str = ser.readall().decode('utf-8')

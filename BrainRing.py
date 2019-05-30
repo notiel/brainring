@@ -101,6 +101,8 @@ class GameState(QtWidgets.QWidget):
             self.commands_answered = list()
         if state == States.CAT_SELECTED:
             self.time = False
+        if state == States.NO_CAT:
+            self.time = False
             self.question = -1
         if state == States.TIMER_ENDED:
             self.time = False
@@ -112,7 +114,7 @@ class GameState(QtWidgets.QWidget):
         if state == States.CONTINUE:
             self.time = True
         if state == States.TEST_BUTTON:
-            self.time = False
+            self.time = True
             self.last_state = self.state
         self.state = state
         self.state_signal.emit()
@@ -160,7 +162,8 @@ class GameState(QtWidgets.QWidget):
         :param command:
         :return:
         """
-        self.commands_answered.append(command)
+        print(command)
+        self.commands_answered.append(command+1)
 
 
 class BrainRing(QtWidgets.QMainWindow, designmain.Ui_MainWindow):
@@ -199,7 +202,6 @@ class BrainRing(QtWidgets.QMainWindow, designmain.Ui_MainWindow):
         self.BtnTest.clicked.connect(self.btn_test_pressed)
         self.BtnTrue.clicked.connect(self.btn_true_pressed)
         self.BtnFalse.clicked.connect(self.btn_false_pressed)
-
 
         self.model: commanddata.CommandTableModel = commanddata.CommandTableModel()
         self.TblCmnd.setModel(self.model)
@@ -282,20 +284,24 @@ class BrainRing(QtWidgets.QMainWindow, designmain.Ui_MainWindow):
         decreases time and disables controls if time is over
         :return:
         """
-        if self.state.time:
-            current = self.Timer.intValue()
-            if current > 0:
-                self.Timer.display(current - 1)
-                if current == questiondata.time_low_threshold + 1:
-                    self.Timer.setStyleSheet("color: red")
-            else:
-                self.state.set_state(States.TIMER_ENDED)
-        if self.state.time == States.TEST_BUTTON:
-            button = common_functions.get_first_button(self.usbhost, 'idle', list())
+        if self.state.state == States.TEST_BUTTON:
+            ser = self.usbhost.open_port(self.usbhost.get_device_port())
+            button = common_functions.get_first_button(self.usbhost, ser, 'idle', list())
             if button:
-                command_name = self.model.commanddata.get_command_by_button(button)
-                QtWidgets.QMessageBox(self, 'Нажата кнопка', "Нажата кнопка команды %s" % command_name,
-                                      QtWidgets.QMessageBox.Ok)
+                self.usbhost.send_command(ser, "RstTmr")
+                command_name = self.model.commanddata.commands[self.model.commanddata.get_command_by_button(button)].name
+                QtWidgets.QMessageBox(QtWidgets.QMessageBox.Information, 'Нажата кнопка',
+                                      "Нажата кнопка команды %s" % command_name, QtWidgets.QMessageBox.Ok).exec_()
+        else:
+            if self.state.time:
+                current = self.Timer.intValue()
+                if current > 0:
+                    self.Timer.display(current - 1)
+                    if current == questiondata.time_low_threshold + 1:
+                        self.Timer.setStyleSheet("color: red")
+                else:
+                    self.state.set_state(States.TIMER_ENDED)
+
     def btn_timer_pressed(self):
         """
         starts and stops timer at any moment

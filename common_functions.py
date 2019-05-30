@@ -56,7 +56,7 @@ def get_first_button_from_answer(answer: str, used_buttons: List[int]) -> Option
     button_keys: List[int] = [int(button) for button in answer_list[::2]]
     buttons_values: List[int] = [int(value) for value in answer_list[1::2]]
     buttons_list = list(zip(button_keys, buttons_values))
-    buttons_list = [btn for btn in buttons_list if btn[1] not in used_buttons.extend([0, -1])]
+    buttons_list = [btn for btn in buttons_list if btn[1] not in [0, -1] and btn[0] not in used_buttons]
     buttons_list.sort(key=lambda i: i[1])
     if buttons_list:
         return buttons_list[0][0]
