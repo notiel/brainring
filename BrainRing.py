@@ -88,6 +88,8 @@ class GameState(QtWidgets.QWidget):
         """
         self.category = new_category
         self.set_state(States.CAT_SELECTED)
+        self.question = -1
+        self.command = -1
 
     def set_state(self, state: States):
         """
@@ -101,6 +103,7 @@ class GameState(QtWidgets.QWidget):
             self.commands_answered = list()
         if state == States.CAT_SELECTED:
             self.time = False
+
         if state == States.NO_CAT:
             self.time = False
             self.question = -1
@@ -202,6 +205,7 @@ class BrainRing(QtWidgets.QMainWindow, designmain.Ui_MainWindow):
         self.BtnTest.clicked.connect(self.btn_test_pressed)
         self.BtnTrue.clicked.connect(self.btn_true_pressed)
         self.BtnFalse.clicked.connect(self.btn_false_pressed)
+        self.BtnFinish.clicked.connect(self.btn_end_pressed)
 
         self.model: commanddata.CommandTableModel = commanddata.CommandTableModel()
         self.TblCmnd.setModel(self.model)
@@ -259,6 +263,7 @@ class BrainRing(QtWidgets.QMainWindow, designmain.Ui_MainWindow):
         :return:
         """
         if self.state.state == States.LAST_QUESTION:
+            self.BtnFinish.setEnabled(False)
             self.scoretable = show_table.CommandCount(self.model)
             self.scoretable.show()
         else:
@@ -314,6 +319,17 @@ class BrainRing(QtWidgets.QMainWindow, designmain.Ui_MainWindow):
             self.state.start_time()
             self.BtnTimer.setText('Стоп')
 
+    def btn_end_pressed(self):
+        """
+        sets state for end button
+        :return:
+        """
+        self.BtnFinish.setEnabled(False)
+        if self.state.question != len(self.state.category.questions) - 1:
+            self.state.set_state(States.ANSWERED)
+        else:
+            self.state.set_state(States.LAST_QUESTION)
+
     def set_state_category(self):
         """
         sets controls states when Category Selected
@@ -326,6 +342,7 @@ class BrainRing(QtWidgets.QMainWindow, designmain.Ui_MainWindow):
         self.BtnFalse.setEnabled(False)
         self.BtnNext.setEnabled(True)
         self.BtnTimer.setEnabled(True)
+        self.BtnFinish.setEnabled(False)
         self.LblDscr.setText("Категория: " + self.state.category.name)
         self.TxtQstn.clear()
         self.LblAnswer.clear()
@@ -418,6 +435,7 @@ class BrainRing(QtWidgets.QMainWindow, designmain.Ui_MainWindow):
         self.BtnNext.setEnabled(False)
         self.BtnTimer.setEnabled(True)
         self.BtnTest.setEnabled(True)
+        self.BtnFinish.setEnabled(False)
 
     def set_state_answered(self):
         """
@@ -432,6 +450,7 @@ class BrainRing(QtWidgets.QMainWindow, designmain.Ui_MainWindow):
         self.BtnFalse.setEnabled(False)
         self.BtnTimer.setEnabled(True)
         self.BtnTest.setEnabled(True)
+        self.BtnFinish.setEnabled(True)
 
     def set_state_continue(self):
         """
@@ -455,6 +474,7 @@ class BrainRing(QtWidgets.QMainWindow, designmain.Ui_MainWindow):
         self.BtnTimer.setEnabled(True)
         self.BtnTimer.setText('Стоп')
         self.BtnTest.setEnabled(True)
+        self.BtnFinish.setEnabled(True)
 
     def set_state_time_ended(self):
         """
@@ -482,6 +502,7 @@ class BrainRing(QtWidgets.QMainWindow, designmain.Ui_MainWindow):
         self.BtnFalse.setEnabled(False)
         self.BtnTimer.setEnabled(True)
         self.BtnTest.setEnabled(True)
+        self.BtnFinish.setEnabled(True)
 
     def set_state_testbutton(self):
         """
