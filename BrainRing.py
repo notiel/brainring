@@ -294,7 +294,8 @@ class BrainRing(QtWidgets.QMainWindow, designmain.Ui_MainWindow):
             button = common_functions.get_first_button(self.usbhost, ser, 'idle', list())
             if button:
                 self.usbhost.send_command(ser, "RstTmr")
-                command_name = self.model.commanddata.commands[self.model.commanddata.get_command_by_button(button)].name
+                command_name = \
+                    self.model.commanddata.commands[self.model.commanddata.get_command_by_button(button)].name
                 QtWidgets.QMessageBox(QtWidgets.QMessageBox.Information, 'Нажата кнопка',
                                       "Нажата кнопка команды %s" % command_name, QtWidgets.QMessageBox.Ok).exec_()
         else:
@@ -367,7 +368,8 @@ class BrainRing(QtWidgets.QMainWindow, designmain.Ui_MainWindow):
         self.LblDscr.setText("%s:\nВопрос № %i из %i. Стоимость %i " %
                              (actual_category.name, self.state.question + 1, len(actual_category.questions),
                               actual_category.questions[self.state.question].points))
-        self.TxtQstn.setHtml(common_functions.get_question_text(actual_category.questions[self.state.question].description))
+        self.TxtQstn.setHtml(common_functions.get_question_text
+                             (actual_category.questions[self.state.question].description))
         self.LblAnswer.setText(actual_category.questions[self.state.question].answer)
         self.category_form.question = question_opened.QuestionDialog(actual_category, self.state.question, self.port,
                                                                      self.model, self.usbhost,

@@ -11,7 +11,6 @@ answer_translate = {'Bad data': "Неверные данные", "Unknown comman
 font_sizes = {10: 72, 50: 60, 100: 48, 200: 36, 250: 30, 500: 24}
 
 
-
 def error_message(text):
     """
     shows error window with text
@@ -47,7 +46,7 @@ def get_first_button(usbhost, ser, state: str, used_buttons: List[str]) -> Optio
     return btn
 
 
-def get_first_button_from_answer(answer: str, used_buttons: List[int]) -> Optional[int]:
+def get_first_button_from_answer(answer: str, used_buttons: List[str]) -> Optional[int]:
     """
 
     :param answer: string with answer from radio
@@ -91,7 +90,11 @@ def get_questions_text_size(question: str) -> int:
     for key in sorted(font_sizes.keys()):
         if len(question) < key:
             return font_sizes[key]
-    return font_sizes[key]
+    # if all length are incorrect take last
+    if font_sizes.keys():
+        return font_sizes[sorted(font_sizes.keys())[-1]]
+    # 30 by default
+    return 30
 
 
 def get_question_text(question: str) -> str:
@@ -102,7 +105,7 @@ def get_question_text(question: str) -> str:
     """
     font_size = get_questions_text_size(question)
     html = "<!DOCTYPE HTML PUBLIC \"-//W3C//DTD HTML 4.0//EN\" "
-    html +="\"http://www.w3.org/TR/REC-html40/strict.dtd\">\n"
+    html += "\"http://www.w3.org/TR/REC-html40/strict.dtd\">\n"
     html += "<html><head><meta name=\"qrichtext\" content=\"1\" /><style type=\"text/css\">\n"
     html += "p, li { white-space: pre-wrap; }\n"
     html += "</style></head><body style=\" font-family:\'MS Shell Dlg 2\'; font-size:7.8pt; "

@@ -76,8 +76,6 @@ def amock_init():
     pass
 
 
-
-
 state_color_dict = {'color_idle': (255, 200, 0),
                     'color_answer': (0, 255, 255),
                     'color_pressed': (0, 255, 0),

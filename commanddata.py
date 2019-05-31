@@ -30,6 +30,7 @@ class Commands:
         """
         return [cmd.button_id for cmd in self.commands if cmd.available]
 
+
 @dataclass
 class Command:
     button_id: int
