@@ -8,6 +8,8 @@ pause_ms = 500
 wrong_answers = ['Bad data', "Unknown command", "No device port", 'Port error']
 answer_translate = {'Bad data': "Неверные данные", "Unknown command": 'Неизвестная команда',
                     "No device port": "Устройство не подключено", "Port error": "Ошибка порта"}
+font_sizes = {10: 72, 50: 60, 100: 48, 200: 36, 250: 30, 500: 24}
+
 
 
 def error_message(text):
@@ -78,3 +80,35 @@ def update_button_list(usbhost, buttons: List[int])->str:
     if answer in wrong_answers:
         return answer_translate[answer]
     return ""
+
+
+def get_questions_text_size(question: str) -> int:
+    """
+    gets size for text
+    :param question: question text wit no format
+    :return: font size
+    """
+    for key in sorted(font_sizes.keys()):
+        if len(question) < key:
+            return font_sizes[key]
+    return font_sizes[key]
+
+
+def get_question_text(question: str) -> str:
+    """
+    gets formatted question text
+    :param question:
+    :return:
+    """
+    font_size = get_questions_text_size(question)
+    html = "<!DOCTYPE HTML PUBLIC \"-//W3C//DTD HTML 4.0//EN\" "
+    html +="\"http://www.w3.org/TR/REC-html40/strict.dtd\">\n"
+    html += "<html><head><meta name=\"qrichtext\" content=\"1\" /><style type=\"text/css\">\n"
+    html += "p, li { white-space: pre-wrap; }\n"
+    html += "</style></head><body style=\" font-family:\'MS Shell Dlg 2\'; font-size:7.8pt; "
+    html += "font-weight:400; font-style:normal;\">\n"
+    html += "<p style=\" margin-top:0px; margin-bottom:0px; margin-left:0px; margin-right:0px;"
+    html += " -qt-block-indent:0; text-indent:0px;\">"
+    html += "<span style=\" font-family:\'Calibri\'; font-size:%ipt; " % font_size
+    html += "color:#000000;\">%s</span></p></body></html>" % question
+    return html

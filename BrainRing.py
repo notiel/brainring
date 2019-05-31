@@ -350,17 +350,7 @@ class BrainRing(QtWidgets.QMainWindow, designmain.Ui_MainWindow):
         self.LblDscr.setText("%s:\nВопрос № %i из %i. Стоимость %i " %
                              (actual_category.name, self.state.question + 1, len(actual_category.questions),
                               actual_category.questions[self.state.question].points))
-        self.TxtQstn.setHtml("<!DOCTYPE HTML PUBLIC \"-//W3C//DTD HTML 4.0//EN\" "
-                             "\"http://www.w3.org/TR/REC-html40/strict.dtd\">\n"
-                             "<html><head><meta name=\"qrichtext\" content=\"1\" /><style type=\"text/css\">\n"
-                             "p, li { white-space: pre-wrap; }\n"
-                             "</style></head><body style=\" font-family:\'MS Shell Dlg 2\'; font-size:7.8pt; "
-                             "font-weight:400; font-style:normal;\">\n"
-                             "<p style=\" margin-top:0px; margin-bottom:0px; margin-left:0px; margin-right:0px;"
-                             " -qt-block-indent:0; text-indent:0px;\">"
-                             "<span style=\" font-family:\'Calibri\'; font-size:20pt; "
-                             "font-weight:600; color:#000000;\">%s</span></p></body></html>"
-                             % actual_category.questions[self.state.question].description)
+        self.TxtQstn.setHtml(common_functions.get_question_text(actual_category.questions[self.state.question].description))
         self.LblAnswer.setText(actual_category.questions[self.state.question].answer)
         self.category_form.question = question_opened.QuestionDialog(actual_category, self.state.question, self.port,
                                                                      self.model, self.usbhost,
