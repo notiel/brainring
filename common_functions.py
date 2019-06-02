@@ -1,5 +1,6 @@
 from PyQt5 import QtWidgets
 from typing import Optional, List
+import re
 state_color_dict = {'color_idle': (255, 200, 0),
                     'color_answer': (0, 255, 255),
                     'color_pressed': (0, 255, 0),
@@ -114,4 +115,28 @@ def get_question_text(question: str) -> str:
     html += " -qt-block-indent:0; text-indent:0px;\">"
     html += "<span style=\" font-family:\'Calibri\'; font-size:%ipt; " % font_size
     html += "color:#000000;\">%s</span></p></body></html>" % question
+    html = get_formatted_question_text(html, font_size)
     return html
+
+
+def get_formatted_question_text(question: str, fontsize: int) -> str:
+    """
+    gets text with bold, italic and underline
+    :param question: text of question
+    :param fontsize: font size
+    :return:
+    """
+    text = re.sub(r'<b>(.+?)</b?>',
+                  r'<span style=" font-family:\'Calibri\'; font-size:%ipt; font-weight:600; color:#000000;">\1</span>'
+                  r'<span style=" font-family:\'Calibri\'; font-size:%ipt; color:#000000;">'
+                  % (fontsize, fontsize), question)
+    text = re.sub(r'<i>(.+?)</i?>',
+                  r'<span style=" font-family:\'Calibri\'; font-size:%ipt;  font-style:italic; color:#000000;">\1'
+                  r'</span><span style=" font-family:\'Calibri\'; font-size:%ipt; color:#000000;">'
+                  % (fontsize, fontsize), text)
+    text = re.sub(r'<u>(.+?)</u?>',
+                  r'<span style=" font-family:\'Calibri\'; font-size:%ipt;   '
+                  r'text-decoration: underline; color:#000000;">\1'
+                  r'</span><span style=" font-family:\'Calibri\'; font-size:%ipt; color:#000000;">'
+                  % (fontsize, fontsize), text)
+    return text
