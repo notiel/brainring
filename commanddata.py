@@ -3,7 +3,7 @@ from PyQt5.QtCore import QAbstractTableModel, Qt, QModelIndex, QVariant
 
 available_commands = 4
 max_commands = 16
-headers = ["Команда", "Вопросы", "Очки", "Номер кнопки"]
+headers = ["Команда", "Вопросы", "Очки", "Номер кнопки", "Ставки"]
 
 
 class Commands:
@@ -38,6 +38,8 @@ class Command:
     available: bool = False
     questions: int = 0
     points: int = 0
+    bets: int = 0
+
 
     def add_questions(self, points: int):
         """
@@ -72,7 +74,7 @@ class CommandTableModel(QAbstractTableModel):
         :param kwargs: necessary field
         :return: we have four data columns
         """
-        return 4
+        return len(headers)
 
     def data(self, idx=QModelIndex(), role=None):
         """
@@ -94,6 +96,8 @@ class CommandTableModel(QAbstractTableModel):
                 return commands_in_game[x].points
             if y == 3:
                 return commands_in_game[x].button_id
+            if y == 4:
+                return commands_in_game[x].bets
         return QVariant()
 
     def headerData(self, section, qt_orientation, role=None):
@@ -168,6 +172,11 @@ class CommandTableModel(QAbstractTableModel):
             if idx.column() == 2:
                 try:
                     self.commanddata.commands[command_id].points = int(value)
+                except ValueError:
+                    pass
+            if idx.column() == 4:
+                try:
+                    self.commanddata.commands[command_id].bets = int(value)
                 except ValueError:
                     pass
             return True
