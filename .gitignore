@@ -5,6 +5,7 @@ dist/
 *.spec
 *.ui
 /*.xlsx
+Images/
 !/.gitignore
 !/tests/Example.xlsx
 !/tests/Real.xlsx
