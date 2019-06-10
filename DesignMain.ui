@@ -380,7 +380,7 @@ p, li { white-space: pre-wrap; }
      <string>Игра</string>
     </property>
     <addaction name="Open"/>
-    <addaction name="action"/>
+    <addaction name="EndGame"/>
    </widget>
    <widget class="QMenu" name="Settings">
     <property name="title">
@@ -388,13 +388,14 @@ p, li { white-space: pre-wrap; }
     </property>
     <addaction name="Settings_2"/>
    </widget>
-   <widget class="QMenu" name="menu">
+   <widget class="QMenu" name="Bets">
     <property name="title">
      <string>Ставки</string>
     </property>
+    <addaction name="MenuBet"/>
    </widget>
    <addaction name="Game"/>
-   <addaction name="menu"/>
+   <addaction name="Bets"/>
    <addaction name="Settings"/>
   </widget>
   <widget class="QStatusBar" name="statusbar"/>
@@ -408,9 +409,14 @@ p, li { white-space: pre-wrap; }
     <string>Открыть</string>
    </property>
   </action>
-  <action name="action">
+  <action name="EndGame">
    <property name="text">
     <string>Завершить игру</string>
+   </property>
+  </action>
+  <action name="MenuBet">
+   <property name="text">
+    <string>Ставки</string>
    </property>
   </action>
  </widget>

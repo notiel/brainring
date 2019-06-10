@@ -4,6 +4,8 @@ import question_opened
 import commanddata
 import designmain
 import settings
+import bets_data
+import bets
 
 import common_functions
 import show_table
@@ -179,6 +181,8 @@ class BrainRing(QtWidgets.QMainWindow, designmain.Ui_MainWindow):
         self.settings_form = None
         self.scoretable = None
         self.usbhost = usbhost.UsbHost()
+        self.bets = bets_data.CurrentBets()
+        self.bets_form = None
         if MOCKED:
             import mock
             mock.amock_init()
@@ -196,6 +200,8 @@ class BrainRing(QtWidgets.QMainWindow, designmain.Ui_MainWindow):
 
         self.Open.setShortcut('Ctrl+O')
         self.Open.triggered.connect(self.menu_open_pressed)
+        self.MenuBet.setShortcut('Ctrl+B')
+        self.MenuBet.triggered.connect(self.menu_bets_pressed)
         self.Settings_2.setShortcut('Ctrl+S')
         self.Settings_2.triggered.connect(self.menu_settings_pressed)
         self.BtnNew.clicked.connect(self.new_question)
@@ -225,6 +231,14 @@ class BrainRing(QtWidgets.QMainWindow, designmain.Ui_MainWindow):
                 self.category_form.show()
         else:
             common_functions.error_message('Файл не выбран или формат неверный (выберите .xlxs файл')
+
+    def menu_bets_pressed(self):
+        """
+        opens bets menu
+        :return:
+        """
+        self.bets_form = bets.BetsDialog(self.model, self.bets)
+        self.bets_form.show()
 
     def state_changed(self):
         """
