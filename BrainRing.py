@@ -573,6 +573,8 @@ class BrainRing(QtWidgets.QMainWindow, designmain.Ui_MainWindow):
             if self.category_form.question:
                 self.category_form.question.close()
             self.category_form.close()
+        if self.bets_form:
+            self.bets_form.close()
         event.accept()
 
 
