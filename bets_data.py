@@ -11,7 +11,7 @@ class Bets:
 
     def __str__(self):
         return "Команда %s на команду %s %i очков (условие: %s)" % \
-               (Bets.command_source, Bets.command_target, Bets.points, Bets.subj)
+               (self.command_source, self.command_target, self.points, self.subj)
 
 
 class CurrentBets:
@@ -28,6 +28,7 @@ class CurrentBets:
         :return:
         """
         self.bets.append(Bets(command_source=cmd1, command_target=cmd2, points=bet, subj=subj))
+        return self.bets[-1]
 
     def delete_bet(self, bet_id: int):
         """
