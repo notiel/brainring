@@ -1,5 +1,6 @@
 from dataclasses import *
 from PyQt5.QtCore import QAbstractTableModel, Qt, QModelIndex, QVariant
+from typing import Optional
 
 available_commands = 4
 max_commands = 16
@@ -15,13 +16,24 @@ class Commands:
     def get_command_by_button(self, button: int) -> int:
         """
         gets command id by id of button
-        :param button:
-        :return:
+        :param button: button is
+        :return: id of command
         """
         for cmd in self.commands:
             if cmd.button_id == button:
                 return self.commands.index(cmd)
         return -1
+
+    def get_command_by_name(self, name: str) -> Optional['Command']:
+        """
+        gets command  by name
+        :param name: name of command
+        :return: command
+        """
+        for cmd in self.commands:
+            if cmd.name == name:
+                return cmd
+        return None
 
     def get_available_commands_list(self):
         """
@@ -29,6 +41,13 @@ class Commands:
         :return:
         """
         return [cmd.button_id for cmd in self.commands if cmd.available]
+
+    def get_available_names_list(self):
+        """
+        returns names of commands that are available
+        :return:
+        """
+        return [cmd.name for cmd in self.commands if cmd.available]
 
 
 @dataclass
@@ -163,7 +182,9 @@ class CommandTableModel(QAbstractTableModel):
         if role == Qt.EditRole:
             command_id = idx.row()
             if idx.column() == 0:
-                self.commanddata.commands[command_id].name = value
+                command = [command for command in self.commanddata.commands if command.available][command_id]
+                command.name = value
+                # self.commanddata.commands[command_id].name = value
             if idx.column() == 1:
                 try:
                     self.commanddata.commands[command_id].questions = int(value)
