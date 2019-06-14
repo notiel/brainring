@@ -10,7 +10,7 @@ class Bets:
     subj: str
 
     def __str__(self):
-        return "Команда %s на команду %s %i очков (условие: %s)" % \
+        return "Команда «%s» на команду «%s» %i очков (условие: %s)" % \
                (self.command_source, self.command_target, self.points, self.subj)
 
 

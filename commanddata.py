@@ -4,6 +4,7 @@ from typing import Optional
 
 available_commands = 4
 max_commands = 16
+koeff = 2
 headers = ["Команда", "Вопросы", "Очки", "Номер кнопки", "Ставки"]
 
 
@@ -58,7 +59,6 @@ class Command:
     questions: int = 0
     points: int = 0
     bets: int = 0
-
 
     def add_questions(self, points: int):
         """
@@ -160,7 +160,7 @@ class CommandTableModel(QAbstractTableModel):
         self.commanddata.commands[command_number].button_id = new_button
         self.dataChanged.emit(QModelIndex(), QModelIndex())
 
-    def score_question(self, command: int, points: int, ):
+    def score_question(self, command: int, points: int):
         """
         score question (update points and question number)
         :param command: command to score
@@ -169,6 +169,22 @@ class CommandTableModel(QAbstractTableModel):
         """
         self.commanddata.commands[command].points += points
         self.commanddata.commands[command].questions += 1
+        self.dataChanged.emit(QModelIndex(), QModelIndex())
+
+    def score_bet(self, command_name: str, bet: int, bet_type: str):
+        """
+        score bet if type "add" and delete bet at any other case
+        :param command_name: command to score
+        :param bet: bet to score
+        :param bet_type: type of scoring
+        :return:
+        """
+        command = self.commanddata.get_command_by_name(command_name)
+        if bet_type == 'add':
+            command.points += koeff * bet
+            command.bets += koeff * bet
+        else:
+            command.points -= bet
         self.dataChanged.emit(QModelIndex(), QModelIndex())
 
     def setData(self, idx, value, role=None):
