@@ -296,6 +296,9 @@ class BrainRing(QtWidgets.QMainWindow, designmain.Ui_MainWindow):
 
         :return:
         """
+        if len(self.bets.bets > 0):
+            common_functions.error_message("Все незачтенные ставки сгорели!")
+            self.bets.clear_bets()
         self.category_form.setVisible(True)
 
     def timerEvent(self):

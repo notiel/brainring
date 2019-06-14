@@ -37,3 +37,10 @@ class CurrentBets:
         :return:
         """
         self.bets.remove(self.bets[bet_id])
+
+    def clear_bet(self):
+        """
+        delete all bets
+        :return:
+        """
+        self.bets = list()

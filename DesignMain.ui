@@ -6,7 +6,7 @@
    <rect>
     <x>0</x>
     <y>0</y>
-    <width>1330</width>
+    <width>1450</width>
     <height>921</height>
    </rect>
   </property>
@@ -18,7 +18,7 @@
   </property>
   <property name="maximumSize">
    <size>
-    <width>1330</width>
+    <width>1450</width>
     <height>16777215</height>
    </size>
   </property>
@@ -304,13 +304,13 @@ p, li { white-space: pre-wrap; }
      <widget class="QTableView" name="TblCmnd">
       <property name="minimumSize">
        <size>
-        <width>500</width>
+        <width>620</width>
         <height>620</height>
        </size>
       </property>
       <property name="maximumSize">
        <size>
-        <width>500</width>
+        <width>620</width>
         <height>620</height>
        </size>
       </property>
@@ -371,7 +371,7 @@ p, li { white-space: pre-wrap; }
     <rect>
      <x>0</x>
      <y>0</y>
-     <width>1330</width>
+     <width>1450</width>
      <height>26</height>
     </rect>
    </property>
