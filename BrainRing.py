@@ -311,13 +311,14 @@ class BrainRing(QtWidgets.QMainWindow, designmain.Ui_MainWindow):
         """
         if self.state.state == States.TEST_BUTTON:
             ser = self.usbhost.open_port(self.usbhost.get_device_port())
-            button = common_functions.get_first_button(self.usbhost, ser, 'idle', list())
-            if button:
-                self.usbhost.send_command(ser, "RstTmr")
-                command_name = \
-                    self.model.commanddata.commands[self.model.commanddata.get_command_by_button(button)].name
-                QtWidgets.QMessageBox(QtWidgets.QMessageBox.Information, 'Нажата кнопка',
-                                      "Нажата кнопка команды %s" % command_name, QtWidgets.QMessageBox.Ok).exec_()
+            if ser:
+                button = common_functions.get_first_button(self.usbhost, ser, 'idle', list())
+                if button and button != -1:
+                    self.usbhost.send_command(ser, "RstTmr")
+                    command_name = \
+                        self.model.commanddata.commands[self.model.commanddata.get_command_by_button(button)].name
+                    QtWidgets.QMessageBox(QtWidgets.QMessageBox.Information, 'Нажата кнопка',
+                                          "Нажата кнопка команды %s" % command_name, QtWidgets.QMessageBox.Ok).exec_()
         else:
             if self.state.time:
                 current = self.Timer.intValue()
