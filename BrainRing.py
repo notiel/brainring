@@ -11,7 +11,6 @@ import common_functions
 import show_table
 import sys
 import os
-from loguru import logger
 from PyQt5 import QtWidgets, QtCore
 from enum import Enum
 from typing import Optional, List
@@ -301,7 +300,7 @@ class BrainRing(QtWidgets.QMainWindow, designmain.Ui_MainWindow):
         """
         if len(self.bets.bets )> 0:
             common_functions.error_message("Все незачтенные ставки сгорели!")
-            self.bets.clear_bets()
+            self.bets.clear_bet()
         self.category_form.setVisible(True)
 
     def timerEvent(self):
@@ -574,15 +573,16 @@ class BrainRing(QtWidgets.QMainWindow, designmain.Ui_MainWindow):
         :param color_key: color key to choose color
         :return:
         """
-        opened_port = self.usbhost.open_port(self.port)
-        if not opened_port:
-            common_functions.error_message("Нет связи с кнопками")
-        else:
-            clr: List[int] = common_functions.state_color_dict[color_key]
-            answer: str = self.usbhost.send_command(opened_port, "SetClrAll", clr[0], clr[1], clr[2])
-            if answer in common_functions.wrong_answers:
-                self.statusbar.showMessage(common_functions.answer_translate[answer])
-            self.usbhost.close_port(opened_port)
+        if not self.port or not self.port.isOPen():
+            opened_port = self.usbhost.open_port(self.port)
+            if not opened_port:
+                common_functions.error_message("Нет связи с кнопками")
+            else:
+                clr: List[int] = common_functions.state_color_dict[color_key]
+                answer: str = self.usbhost.send_command(opened_port, "SetClrAll", clr[0], clr[1], clr[2])
+                if answer in common_functions.wrong_answers:
+                    self.statusbar.showMessage(common_functions.answer_translate[answer])
+                self.usbhost.close_port(opened_port)
 
     def closeEvent(self, event):
         if self.category_form:
