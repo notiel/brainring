@@ -84,7 +84,7 @@ class UsbHost:
         :param timeout: timeout for serial port
         :return: port
         """
-        if port_id:
+        if not port_id:
             return None
         try:
             ser = serial.Serial(port_id, baudrate=115200, timeout=timeout)

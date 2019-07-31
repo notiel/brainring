@@ -310,7 +310,7 @@ class BrainRing(QtWidgets.QMainWindow, designmain.Ui_MainWindow):
         :return:
         """
         if self.state.state == States.TEST_BUTTON:
-            ser = self.usbhost.open_port(self.usbhost.get_device_port())
+            ser = self.port if self.port else self.usbhost.open_port(self.usbhost.get_device_port())
             if ser:
                 button = common_functions.get_first_button(self.usbhost, ser, 'idle', list())
                 if button and button != -1:
