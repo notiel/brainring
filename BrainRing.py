@@ -394,7 +394,7 @@ class BrainRing(QtWidgets.QMainWindow, designmain.Ui_MainWindow):
         self.LblAnswer.setText(actual_category.questions[self.state.question].answer)
         self.category_form.question = question_opened.QuestionDialog(actual_category, self.state.question, self.port,
                                                                      self.model, self.usbhost,
-                                                                     self.state.commands_answered)
+                                                                     self.state.commands_answered, self.Timer)
         self.category_form.question.question_signal[int].connect(self.cmd_button_pressed)
         self.state.answer_signal[bool].connect(self.category_form.question.answer_processed)
         self.category_form.question.show()
@@ -545,6 +545,15 @@ class BrainRing(QtWidgets.QMainWindow, designmain.Ui_MainWindow):
         self.port = self.scan_ports()
         self.settings_form = settings.Settings(self.model, self.port, self.usbhost)
         self.settings_form.show()
+        self.settings_form.timer_signal[int].connect(self.timer_changed)
+
+    def timer_changed(self, value: int):
+        """
+        set new timer value
+        :param value:
+        :return:
+        """
+        self.Timer.display(str(value))
 
     def scan_ports(self) -> Optional[str]:
         """

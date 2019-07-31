@@ -1,7 +1,7 @@
 from dataclasses import *
 from typing import List, Optional, Tuple
 from openpyxl import load_workbook
-question_time = 10
+question_time = 60
 time_low_threshold = 5
 
 

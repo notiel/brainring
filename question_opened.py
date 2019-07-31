@@ -9,7 +9,7 @@ class QuestionDialog(QtWidgets.QWidget, question.Ui_Form):
 
     question_signal = QtCore.pyqtSignal(int)
 
-    def __init__(self, category: questiondata.Category, number, port, model, my_usbhost, used_buttons):
+    def __init__(self, category: questiondata.Category, number, port, model, my_usbhost, used_buttons, timer):
         super().__init__()
         self.setupUi(self)
         self.count: int = 0
@@ -22,11 +22,12 @@ class QuestionDialog(QtWidgets.QWidget, question.Ui_Form):
 
         self.timer = QtCore.QTimer()
         self.timer.timeout.connect(self.timerEvent)
-        self.timer.start(1000)
-        self.LCDTimer.display(questiondata.question_time)
-
+        self.timer.start(250)
         self.image = None
         self.initUi(category, number)
+        self.parentTimer = timer
+        self.LCDTimer.display(self.parentTimer.intValue())
+
         self.open_port()
 
     def initUi(self, category: questiondata.Category, number):
@@ -70,12 +71,12 @@ class QuestionDialog(QtWidgets.QWidget, question.Ui_Form):
         decreases timer every second and scans buttons if scanning mode enables
         :return:
         """
+        current = self.parentTimer.intValue()
+        if current > 0:
+            self.LCDTimer.display(current)
+            if current == questiondata.time_low_threshold:
+                self.LCDTimer.setStyleSheet("color: red")
         if self.scanning:
-            current = self.LCDTimer.intValue()
-            if current > 0:
-                self.LCDTimer.display(current - 1)
-                if current == questiondata.time_low_threshold + 1:
-                    self.LCDTimer.setStyleSheet("color: red")
             button: int = common_functions.get_first_button(self.usbhost, self.opened_port, "answer", self.used_buttons)
             if button:
                 commands = self.model.commanddata

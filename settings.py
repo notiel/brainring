@@ -11,6 +11,9 @@ retry_number = 20
 
 class Settings(QtWidgets.QWidget, settings_ui.Ui_Settings):
 
+    timer_signal = QtCore.pyqtSignal(int)
+    end_signal = QtCore.pyqtSignal(int)
+
     def __init__(self, commandmodel, port, my_usbhost):
         super().__init__()
         self.setupUi(self)
@@ -97,6 +100,7 @@ class Settings(QtWidgets.QWidget, settings_ui.Ui_Settings):
         """
         self.SpinBefore.setMaximum(self.SpinLength.value())
         questiondata.question_time = self.SpinLength.value()
+        self.timer_signal.emit(self.SpinLength.value())
 
     def time_low_threshold_changed(self):
         """
@@ -104,6 +108,7 @@ class Settings(QtWidgets.QWidget, settings_ui.Ui_Settings):
         :return:
         """
         questiondata.time_low_threshold = self.SpinBefore.value()
+        self.end_signal.emit(self.SpinBefore.value())
 
     def btn_select_pressed(self):
         """

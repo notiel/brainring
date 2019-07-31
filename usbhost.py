@@ -50,7 +50,7 @@ class UsbHost:
                 ser.close()
                 if 'Ack 0' in answer:
                     return comport
-            except serial.SerialException:
+            except (serial.SerialException, Exception):
                 continue
         return None
 
@@ -84,7 +84,7 @@ class UsbHost:
         :param timeout: timeout for serial port
         :return: port
         """
-        if port_id == None:
+        if port_id:
             return None
         try:
             ser = serial.Serial(port_id, baudrate=115200, timeout=timeout)
