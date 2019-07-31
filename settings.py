@@ -44,9 +44,6 @@ class Settings(QtWidgets.QWidget, settings_ui.Ui_Settings):
         self.initUi()
 
     def initUi(self):
-        if not self.port:
-            for btn in self.btnlist:
-                btn.setEnabled(False)
         for CB in self.checklist:
             CB.stateChanged.connect(self.command_activated)
         for CB in self.CBlist:
@@ -56,6 +53,14 @@ class Settings(QtWidgets.QWidget, settings_ui.Ui_Settings):
             CB.currentTextChanged.connect(self.button_selected)
         for btn in self.btnlist:
             btn.clicked.connect(self.btn_select_pressed)
+        for i in range(len(self.commanddata.commanddata.commands)):
+            value = self.commanddata.commanddata.commands[i].available
+            self.checklist[i].setChecked(value)
+            self.btnlist[i].setEnabled(value)
+            self.CBlist[i].setEnabled(value)
+        if not self.port:
+            for btn in self.btnlist:
+                btn.setEnabled(False)
         self.SpinLength.valueChanged.connect(self.question_time_changed)
 
     def command_activated(self):
@@ -66,7 +71,8 @@ class Settings(QtWidgets.QWidget, settings_ui.Ui_Settings):
         CB: QtWidgets.QCheckBox = self.sender()
         i: int = self.checklist.index(CB)
         status: bool = CB.isChecked()
-        self.btnlist[i].setEnabled(status)
+        if self.port:
+            self.btnlist[i].setEnabled(status)
         self.CBlist[i].setEnabled(status)
         if status:
             self.commanddata.enable_command(i)
