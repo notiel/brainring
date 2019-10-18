@@ -15,9 +15,9 @@ class CategoryForm(QtWidgets.QWidget):
         # self.question = None
         self.stub = None
         self.buttons: List[QtWidgets.QPushButton] = list()
-        self.setupUi()
+        self.setup_ui()
 
-    def setupUi(self):
+    def setup_ui(self):
         self.setObjectName("Category")
         self.setWindowTitle("Категории")
         self.create_layout([category.name for category in self.game.categories])

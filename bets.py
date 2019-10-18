@@ -10,15 +10,14 @@ class BetsDialog(QtWidgets.QWidget, design_bets.Ui_Form):
         self.setupUi(self)
         self.model = model
         self.bets = bets
-        self.initUi()
+        self.init_ui()
         self.CBCmd1.currentTextChanged.connect(self.src_command_changed)
         self.BtnAdd.clicked.connect(self.add_pressed)
         self.BtnAdBet.clicked.connect(self.score_bet)
         self.BtnDeleteBet.clicked.connect(self.delete_bet)
         self.LstBets.currentItemChanged.connect(self.item_changed)
 
-
-    def initUi(self):
+    def init_ui(self):
         self.LstBets.addItems(list(map(str, self.bets.bets)))
         self.CBCmd1.addItems(self.model.commanddata.get_available_names_list())
         self.CBCmd2.addItems(self.model.commanddata.get_available_names_list())
@@ -28,7 +27,7 @@ class BetsDialog(QtWidgets.QWidget, design_bets.Ui_Form):
 
     def src_command_changed(self):
         """
-
+        scores for command changed
         :return:
         """
         new_command = self.CBCmd1.currentText()
@@ -37,7 +36,7 @@ class BetsDialog(QtWidgets.QWidget, design_bets.Ui_Form):
 
     def add_pressed(self):
         """
-
+        btn add pressed
         :return:
         """
         self.model.score_bet(self.CBCmd1.currentText(), self.SpinScore.value(), "")
@@ -47,7 +46,7 @@ class BetsDialog(QtWidgets.QWidget, design_bets.Ui_Form):
 
     def item_changed(self):
         """
-
+        selected bet
         :return:
         """
         current = self.LstBets.currentItem()
@@ -60,11 +59,11 @@ class BetsDialog(QtWidgets.QWidget, design_bets.Ui_Form):
 
     def delete_bet(self):
         """
-
+        bet deleted
         :return:
         """
-        id = self.LstBets.currentRow()
-        self.bets.delete_bet(id)
+        bet_id = self.LstBets.currentRow()
+        self.bets.delete_bet(bet_id)
         self.LstBets.clear()
         self.LstBets.addItems((list(map(str, self.bets.bets))))
         self.BtnDeleteBet.setEnabled(False)
@@ -72,13 +71,13 @@ class BetsDialog(QtWidgets.QWidget, design_bets.Ui_Form):
 
     def score_bet(self):
         """
-
+        bet scored
         :return:
         """
         bet_id = self.LstBets.currentRow()
         self.model.score_bet(self.bets.bets[bet_id].command_source, self.bets.bets[bet_id].points, "add")
-        id = self.LstBets.currentRow()
-        self.bets.delete_bet(id)
+        bet_id = self.LstBets.currentRow()
+        self.bets.delete_bet(bet_id)
         self.LstBets.clear()
         self.LstBets.addItems((list(map(str, self.bets.bets))))
         self.BtnDeleteBet.setEnabled(False)

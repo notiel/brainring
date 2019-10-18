@@ -1,6 +1,6 @@
 # -*- coding: utf-8 -*-
 
-# Form implementation generated from reading ui file 'Bets.ui'
+# Form implementation generated from reading ui file 'bets.ui'
 #
 # Created by: PyQt5 UI code generator 5.11.3
 #
@@ -11,10 +11,16 @@ from PyQt5 import QtCore, QtGui, QtWidgets
 class Ui_Form(object):
     def setupUi(self, Form):
         Form.setObjectName("Form")
-        Form.resize(635, 320)
+        Form.resize(867, 368)
+        font = QtGui.QFont()
+        font.setPointSize(12)
+        Form.setFont(font)
         self.gridLayout = QtWidgets.QGridLayout(Form)
         self.gridLayout.setObjectName("gridLayout")
         self.LstBets = QtWidgets.QListWidget(Form)
+        font = QtGui.QFont()
+        font.setPointSize(12)
+        self.LstBets.setFont(font)
         self.LstBets.setObjectName("LstBets")
         self.gridLayout.addWidget(self.LstBets, 0, 0, 1, 6)
         self.LblCmd = QtWidgets.QLabel(Form)

@@ -5,7 +5,7 @@ from typing import Optional
 available_commands = 4
 max_commands = 16
 koeff = 2
-headers = ["Команда", "Вопросы", "Очки", "Номер кнопки", "Ставки"]
+headers = ["Команда", "Вопросы", "Очки", "За вопросы", "Номер\nкнопки", "Ставки"]
 
 
 class Commands:
@@ -58,6 +58,7 @@ class Command:
     available: bool = False
     questions: int = 0
     points: int = 0
+    question_points: int = 0
     bets: int = 0
 
     def add_questions(self, points: int):
@@ -68,6 +69,7 @@ class Command:
         """
         self.questions += 1
         self.points += points
+        self.question_points += points
 
 
 class CommandTableModel(QAbstractTableModel):
@@ -114,8 +116,10 @@ class CommandTableModel(QAbstractTableModel):
             if y == 2:
                 return commands_in_game[x].points
             if y == 3:
-                return commands_in_game[x].button_id
+                return commands_in_game[x].question_points
             if y == 4:
+                return commands_in_game[x].button_id
+            if y == 5:
                 return commands_in_game[x].bets
         return QVariant()
 
@@ -168,6 +172,7 @@ class CommandTableModel(QAbstractTableModel):
         :return:
         """
         self.commanddata.commands[command].points += points
+        self.commanddata.commands[command].question_points += points
         self.commanddata.commands[command].questions += 1
         self.dataChanged.emit(QModelIndex(), QModelIndex())
 
@@ -197,23 +202,28 @@ class CommandTableModel(QAbstractTableModel):
         """
         if role == Qt.EditRole:
             command_id = idx.row()
+            command = [command for command in self.commanddata.commands if command.available][command_id]
             if idx.column() == 0:
-                command = [command for command in self.commanddata.commands if command.available][command_id]
                 command.name = value
                 # self.commanddata.commands[command_id].name = value
             if idx.column() == 1:
                 try:
-                    self.commanddata.commands[command_id].questions = int(value)
+                    command.questions = int(value)
                 except ValueError:
                     pass
             if idx.column() == 2:
                 try:
-                    self.commanddata.commands[command_id].points = int(value)
+                    command.points = int(value)
                 except ValueError:
                     pass
-            if idx.column() == 4:
+            if idx.column() == 3:
                 try:
-                    self.commanddata.commands[command_id].bets = int(value)
+                    command.question_points = int(value)
+                except ValueError:
+                    pass
+            if idx.column() == 5:
+                try:
+                    command.bets = int(value)
                 except ValueError:
                     pass
             return True

@@ -14,22 +14,19 @@ class Settings(QtWidgets.QWidget, settings_ui.Ui_Settings):
     timer_signal = QtCore.pyqtSignal(int)
     end_signal = QtCore.pyqtSignal(int)
 
-    def __init__(self, commandmodel, port, my_usbhost):
+    def __init__(self, commandmodel, my_usbhost):
         super().__init__()
         self.setupUi(self)
-        self.SpinBefore.setValue(questiondata.time_low_threshold)
-        self.SpinLength.setValue(questiondata.question_time)
+        self.usbhost = my_usbhost
         self.scanning: bool = False
-        self.port: str = port
-        self.opened_port = None
         self.testing: Optional[QtWidgets.QPushButton] = None
         self.retries: int = 0
+        self.commanddata: commanddata.CommandTableModel = commandmodel
+
         self.timer = QtCore.QTimer()
         self.timer.timeout.connect(self.timerEvent)
         self.timer.start(500)
-        self.usbhost = my_usbhost
 
-        self.commanddata: commanddata.CommandTableModel = commandmodel
         self.checklist: List[QtWidgets.QCheckBox] = [self.CB1, self.CB2, self.CB3, self.CB4, self.CB5, self.CB6,
                                                      self.CB7, self.CB8, self.CB9, self.CB10, self.CB11, self.CB12,
                                                      self.CB13, self.CB14, self.CB15, self.CB16]
@@ -41,9 +38,13 @@ class Settings(QtWidgets.QWidget, settings_ui.Ui_Settings):
                                                   self.CBButton9, self.CBButton10, self.CBButton11, self.CBButton12,
                                                   self.CBButton13, self.CBButton14, self.CBButton15, self.CBButton16]
         self.CBlabels: List[str] = list()
-        self.initUi()
 
-    def initUi(self):
+        self.SpinBefore.setValue(questiondata.time_low_threshold)
+        self.SpinLength.setValue(questiondata.question_time)
+
+        self.init_ui()
+
+    def init_ui(self):
         for CB in self.checklist:
             CB.stateChanged.connect(self.command_activated)
         for CB in self.CBlist:
@@ -68,9 +69,9 @@ class Settings(QtWidgets.QWidget, settings_ui.Ui_Settings):
         activates and deactivates corresponging command
         :return:
         """
-        CB: QtWidgets.QCheckBox = self.sender()
-        i: int = self.checklist.index(CB)
-        status: bool = CB.isChecked()
+        cb: QtWidgets.QCheckBox = self.sender()
+        i: int = self.checklist.index(cb)
+        status: bool = cb.isChecked()
         if self.port:
             self.btnlist[i].setEnabled(status)
         self.CBlist[i].setEnabled(status)
@@ -87,7 +88,6 @@ class Settings(QtWidgets.QWidget, settings_ui.Ui_Settings):
         """
         sender: QtWidgets.QComboBox = self.sender()
         current: str = sender.currentText()
-        # self.commanddata.data()
         self.commanddata.update_button_id(self.CBlist.index(sender), int(current.replace("Кнопка ", "")))
         # find absent button and set duplicate to absent
         current_labels: List[str] = [CB.currentText() for CB in self.CBlist]
@@ -121,15 +121,7 @@ class Settings(QtWidgets.QWidget, settings_ui.Ui_Settings):
         enables timer if any button pressed, button is remembered in self.testing variable
         :return:
         """
-        self.opened_port = self.usbhost.open_port(self.port)
-        if not self.opened_port:
-            self.port = self.usbhost.get_device_port()
-            if not self.port:
-                common_functions.error_message("Нет подключенных кнопок")
-                return
-            else:
-                self.opened_port = self.usbhost.open_port(self.port)
-        error = self.usbhost.send_command(self.opened_port, "rsttmr")
+        error = self.usbhost.send_command("rsttmr")
         if error in common_functions.wrong_answers:
             common_functions.error_message(common_functions.answer_translate[error])
             return
@@ -149,11 +141,10 @@ class Settings(QtWidgets.QWidget, settings_ui.Ui_Settings):
             caption = self.LblInstruction.text() + "."
             self.LblInstruction.setText(caption)
             self.retries += 1
-            button: int = common_functions.get_first_button(self.usbhost, self.opened_port, "idle", list())
+            button: int = common_functions.get_first_button(self.usbhost, "idle", list())
             if button:
                 self.CBlist[self.btnlist.index(self.testing)].setCurrentText("Кнопка %i" % button)
                 self.state_not_scanning()
-            print(self.retries)
             if self.retries > retry_number:
                 common_functions.error_message("Ни одна кнопка не нажата в течение 10 секунд, попробуйте еще раз")
                 self.state_not_scanning()
@@ -164,6 +155,4 @@ class Settings(QtWidgets.QWidget, settings_ui.Ui_Settings):
         :return:
         """
         self.scanning = False
-        self.usbhost.close_port(self.opened_port)
-        self.opened_port = None
         self.LblInstruction.setText("Нажмите на кнопку с именем команды для автоопределения")

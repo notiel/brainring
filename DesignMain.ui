@@ -18,7 +18,7 @@
   </property>
   <property name="maximumSize">
    <size>
-    <width>1450</width>
+    <width>16777215</width>
     <height>16777215</height>
    </size>
   </property>
@@ -281,13 +281,13 @@
      <widget class="QTextBrowser" name="TxtQstn">
       <property name="minimumSize">
        <size>
-        <width>800</width>
-        <height>150</height>
+        <width>0</width>
+        <height>0</height>
        </size>
       </property>
       <property name="maximumSize">
        <size>
-        <width>800</width>
+        <width>2000</width>
         <height>16777215</height>
        </size>
       </property>
@@ -304,15 +304,20 @@ p, li { white-space: pre-wrap; }
      <widget class="QTableView" name="TblCmnd">
       <property name="minimumSize">
        <size>
-        <width>620</width>
-        <height>620</height>
+        <width>750</width>
+        <height>0</height>
        </size>
       </property>
       <property name="maximumSize">
        <size>
-        <width>620</width>
-        <height>620</height>
+        <width>2000</width>
+        <height>2000</height>
        </size>
+      </property>
+      <property name="font">
+       <font>
+        <pointsize>12</pointsize>
+       </font>
       </property>
       <property name="frameShape">
        <enum>QFrame::StyledPanel</enum>

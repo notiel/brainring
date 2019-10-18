@@ -14,15 +14,14 @@ import os
 from PyQt5 import QtWidgets, QtCore
 from enum import Enum
 from typing import Optional, List
+from loguru import logger
+logger.start("logfile.log", rotation="1 week", format="{time} {level} {message}", level="DEBUG", enqueue=True)
 
 MOCKED = False
 if not MOCKED:
     import usbhost
 else:
     import mock as usbhost
-
-from loguru import logger
-logger.start("logfile.log", rotation="1 week", format="{time} {level} {message}", level="DEBUG", enqueue=True)
 
 
 def setup_exception_logging():
@@ -113,6 +112,8 @@ class GameState(QtWidgets.QWidget):
             self.question = -1
         if state == States.TIMER_ENDED:
             self.time = False
+        if state == States.ANSWERED:
+            self.time = False
         if state == States.ANSWER_READY:
             self.time = False
         if state == States.LAST_QUESTION:
@@ -190,7 +191,7 @@ class BrainRing(QtWidgets.QMainWindow, designmain.Ui_MainWindow):
             mock.amock_init()
             self.mock = mock.amock
             self.mock.show()
-        self.port = self.scan_ports()
+        self.scan_ports()
         common_functions.update_button_list(self.usbhost, [1, 2, 3, 4])
         self.set_color("color_idle")
         self.state: GameState = GameState()
@@ -298,7 +299,7 @@ class BrainRing(QtWidgets.QMainWindow, designmain.Ui_MainWindow):
 
         :return:
         """
-        if len(self.bets.bets )> 0:
+        if len(self.bets.bets) > 0:
             common_functions.error_message("Все незачтенные ставки сгорели!")
             self.bets.clear_bet()
         self.category_form.setVisible(True)
@@ -309,11 +310,10 @@ class BrainRing(QtWidgets.QMainWindow, designmain.Ui_MainWindow):
         :return:
         """
         if self.state.state == States.TEST_BUTTON:
-            ser = self.port if self.port else self.usbhost.open_port(self.usbhost.get_device_port())
-            if ser:
-                button = common_functions.get_first_button(self.usbhost, ser, 'idle', list())
+            if self.usbhost.send_command("RstTmr") == 'Ok':
+                button = common_functions.get_first_button(self.usbhost, 'idle', list())
                 if button and button != -1:
-                    self.usbhost.send_command(ser, "RstTmr")
+                    self.usbhost.send_command("RstTmr")
                     command_name = \
                         self.model.commanddata.commands[self.model.commanddata.get_command_by_button(button)].name
                     QtWidgets.QMessageBox(QtWidgets.QMessageBox.Information, 'Нажата кнопка',
@@ -346,6 +346,7 @@ class BrainRing(QtWidgets.QMainWindow, designmain.Ui_MainWindow):
         :return:
         """
         self.BtnFinish.setEnabled(False)
+        self.state.answer_signal.emit(True)
         if self.state.question != len(self.state.category.questions) - 1:
             self.state.set_state(States.ANSWERED)
         else:
@@ -541,8 +542,7 @@ class BrainRing(QtWidgets.QMainWindow, designmain.Ui_MainWindow):
         self.BtnTest.setText("Тест начат")
 
     def menu_settings_pressed(self):
-        self.port = self.scan_ports()
-        self.settings_form = settings.Settings(self.model, self.port, self.usbhost)
+        self.settings_form = settings.Settings(self.model, self.usbhost)
         self.settings_form.show()
         self.settings_form.timer_signal[int].connect(self.timer_changed)
 
@@ -554,7 +554,7 @@ class BrainRing(QtWidgets.QMainWindow, designmain.Ui_MainWindow):
         """
         self.Timer.display(str(value))
 
-    def scan_ports(self) -> Optional[str]:
+    def scan_ports(self):
         """
         returns comport with our radiodevice and updates statusbar
         :return: comport as "COMX" or None
@@ -562,10 +562,8 @@ class BrainRing(QtWidgets.QMainWindow, designmain.Ui_MainWindow):
         radioport = self.usbhost.get_device_port()
         if radioport:
             self.statusbar.showMessage("Usb2Radio at port %s is available" % radioport)
-            return radioport
         else:
             self.statusbar.showMessage("USB2Radio not found")
-            return None
 
     def set_color(self, color_key: str):
         """
@@ -573,19 +571,10 @@ class BrainRing(QtWidgets.QMainWindow, designmain.Ui_MainWindow):
         :param color_key: color key to choose color
         :return:
         """
-        try:
-            self.port.close()
-        except Exception:
-            pass
-        opened_port = self.usbhost.open_port(self.port)
-        if not opened_port:
-            common_functions.error_message("Нет связи с кнопками")
-        else:
-            clr: List[int] = common_functions.state_color_dict[color_key]
-            answer: str = self.usbhost.send_command(opened_port, "SetClrAll", clr[0], clr[1], clr[2])
-            if answer in common_functions.wrong_answers:
-                self.statusbar.showMessage(common_functions.answer_translate[answer])
-            self.usbhost.close_port(opened_port)
+        clr: List[int] = common_functions.state_color_dict[color_key]
+        answer: str = self.usbhost.send_command("SetClrAll", clr[0], clr[1], clr[2])
+        if answer in common_functions.wrong_answers:
+            self.statusbar.showMessage(common_functions.answer_translate[answer])
 
     def closeEvent(self, event):
         if self.category_form:

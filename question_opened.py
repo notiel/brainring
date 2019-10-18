@@ -9,28 +9,28 @@ class QuestionDialog(QtWidgets.QWidget, question.Ui_Form):
 
     question_signal = QtCore.pyqtSignal(int)
 
-    def __init__(self, category: questiondata.Category, number, port, model, my_usbhost, used_buttons, timer):
+    def __init__(self, category: questiondata.Category, number, model, my_usbhost, used_buttons, timer):
         super().__init__()
         self.setupUi(self)
         self.count: int = 0
-        self.port = port
         self.model = model
         self.opened_port = None
         self.scanning = False
         self.usbhost = my_usbhost
         self.used_buttons = used_buttons
+        self.image = None
 
         self.timer = QtCore.QTimer()
         self.timer.timeout.connect(self.timerEvent)
         self.timer.start(250)
-        self.image = None
-        self.initUi(category, number)
+
+        self.init_ui(category, number)
         self.parentTimer = timer
         self.LCDTimer.display(self.parentTimer.intValue())
 
         self.open_port()
 
-    def initUi(self, category: questiondata.Category, number):
+    def init_ui(self, category: questiondata.Category, number):
         current_question: questiondata.Question = category.questions[number]
         self.LblPoints.setText("Стоимость вопроса: %i" % current_question.points)
         self.LblCategory.setText("Категория: %s" % category.name)
@@ -52,15 +52,7 @@ class QuestionDialog(QtWidgets.QWidget, question.Ui_Form):
 
         :return:
         """
-        self.opened_port = self.usbhost.open_port(self.port)
-        if not self.opened_port:
-            self.port = self.usbhost.get_device_port()
-            if not self.port:
-                common_functions.error_message("Нет подключенных кнопок")
-                return
-            else:
-                self.opened_port = self.usbhost.open_port(self.port)
-        answer = self.usbhost.send_command(self.opened_port, "RstTmr")
+        answer = self.usbhost.send_command("RstTmr")
         if answer in common_functions.wrong_answers:
             common_functions.error_message(common_functions.answer_translate[answer])
             return
@@ -77,7 +69,7 @@ class QuestionDialog(QtWidgets.QWidget, question.Ui_Form):
             if current == questiondata.time_low_threshold:
                 self.LCDTimer.setStyleSheet("color: red")
         if self.scanning:
-            button: int = common_functions.get_first_button(self.usbhost, self.opened_port, "answer", self.used_buttons)
+            button: int = common_functions.get_first_button(self.usbhost, "answer", self.used_buttons)
             if button:
                 commands = self.model.commanddata
                 self.BtnAnswer.setText("Отвечает команда «%s»" %
@@ -96,14 +88,11 @@ class QuestionDialog(QtWidgets.QWidget, question.Ui_Form):
         if result:
             self.destroy()
         else:
-            self.open_port()
             self.BtnAnswer.setText("Отвечает команда...")
 
     def closeEvent(self, event):
         if self.image:
             self.image.destroy()
-        if self.opened_port:
-            self.usbhost.close_port(self.opened_port)
         event.accept()
 
 

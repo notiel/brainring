@@ -26,16 +26,15 @@ def error_message(text):
     error.exec_()
 
 
-def get_first_button(usbhost, ser, state: str, used_buttons: List[str]) -> Optional[int]:
+def get_first_button(usbhost, state: str, used_buttons: List[str]) -> Optional[int]:
     """
     asks comport about buttons pressed
     :param used_buttons: list of already used buttons. we may not return them
     :param usbhost: usbhost class example for send commands to usb
-    :param ser: serial port with radio
     :param state: state to get color back ("idle" for idle color, "question" for question color"
     :return: number of first pressed button
     """
-    answer = usbhost.send_query(ser, "Getbtns")
+    answer = usbhost.send_query("Getbtns")
     if answer in wrong_answers:
         return -1
     buttons: str = answer.replace("Btns: ", "")
@@ -43,7 +42,7 @@ def get_first_button(usbhost, ser, state: str, used_buttons: List[str]) -> Optio
     if btn:
         clr1 = state_color_dict['color_pressed']
         clr2 = state_color_dict['color_answer'] if state == 'answer' else state_color_dict['color_idle']
-        usbhost.send_query(ser, "Flash", btn, clr1[0], clr1[1], clr1[2], pause_ms, clr2[0], clr2[1], clr2[2])
+        usbhost.send_query("Flash", btn, clr1[0], clr1[1], clr1[2], pause_ms, clr2[0], clr2[1], clr2[2])
     return btn
 
 
@@ -72,11 +71,7 @@ def update_button_list(usbhost, buttons: List[int])->str:
     :param buttons: list of available buttons
     :return: error or empty string
     """
-    port: str = usbhost.get_device_port()
-    if not port:
-        return "Ошибка связи с устройством"
-    opened_port = usbhost.open_port(port)
-    answer = usbhost.send_query(opened_port, "SetBtnList", *buttons)
+    answer = usbhost.send_query("SetBtnList", *buttons)
     if answer in wrong_answers:
         return answer_translate[answer]
     return ""
