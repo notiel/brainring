@@ -76,7 +76,7 @@ class QuestionDialog(QtWidgets.QWidget, question.Ui_Form):
                                        commands.commands[commands.get_command_by_button(button)].name)
                 self.BtnAnswer.setStyleSheet("color: red")
                 self.scanning = False
-                self.usbhost.close_port(self.opened_port)
+                self.usbhost.close_port()
                 self.question_signal.emit(button)
 
     def answer_processed(self, result):

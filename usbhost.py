@@ -108,8 +108,12 @@ class UsbHost:
         if not comport:
             return None
         try:
-            return serial.Serial(self.comport, self.baudrate, timeout=timeout)
+            self.ser = serial.Serial(comport, self.baudrate, timeout=timeout)
+            self.comport = comport
+            return self.ser
         except (serial.SerialException, AttributeError):
+            self.ser = None
+            self.comport = ""
             return None
 
     def open_port(self, timeout: float = 0.2):
@@ -205,6 +209,6 @@ class UsbHost:
             self.close_port()
             return res
         except (serial.SerialException, AttributeError) as e:
-            return 'Port error' + e
+            return 'Port error' + str(e)
         except Exception:
             raise

@@ -59,7 +59,7 @@ class Settings(QtWidgets.QWidget, settings_ui.Ui_Settings):
             self.checklist[i].setChecked(value)
             self.btnlist[i].setEnabled(value)
             self.CBlist[i].setEnabled(value)
-        if not self.port:
+        if not self.usbhost.ser:
             for btn in self.btnlist:
                 btn.setEnabled(False)
         self.SpinLength.valueChanged.connect(self.question_time_changed)
@@ -72,7 +72,7 @@ class Settings(QtWidgets.QWidget, settings_ui.Ui_Settings):
         cb: QtWidgets.QCheckBox = self.sender()
         i: int = self.checklist.index(cb)
         status: bool = cb.isChecked()
-        if self.port:
+        if self.usbhost.ser:
             self.btnlist[i].setEnabled(status)
         self.CBlist[i].setEnabled(status)
         if status:

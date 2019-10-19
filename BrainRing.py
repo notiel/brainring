@@ -248,6 +248,10 @@ class BrainRing(QtWidgets.QMainWindow, designmain.Ui_MainWindow):
         applies state to UI
         :return:
         """
+        if self.state.time:
+            self.BtnTimer.setText("Стоп")
+        else:
+            self.BtnTimer.setText("Старт")
         if self.state.state == States.CAT_SELECTED:
             self.set_state_category()
         if self.state.state == States.QUEST_SELECTED:
@@ -264,6 +268,8 @@ class BrainRing(QtWidgets.QMainWindow, designmain.Ui_MainWindow):
             self.set_state_continue()
         if self.state.state == States.TEST_BUTTON:
             self.set_state_testbutton()
+        if self.state.state == States.NO_CAT:
+            self.set_state_nocat()
 
     def category_selected(self, category_passed):
         """
@@ -283,6 +289,7 @@ class BrainRing(QtWidgets.QMainWindow, designmain.Ui_MainWindow):
             self.BtnFinish.setEnabled(False)
             self.scoretable = show_table.CommandCount(self.model)
             self.scoretable.show()
+            self.state.set_state(States.NO_CAT)
         else:
             self.category_form.stub.setVisible(False)
             self.state.set_state(States.QUEST_SELECTED)
@@ -392,9 +399,9 @@ class BrainRing(QtWidgets.QMainWindow, designmain.Ui_MainWindow):
         self.TxtQstn.setHtml(common_functions.get_question_text
                              (actual_category.questions[self.state.question].description))
         self.LblAnswer.setText(actual_category.questions[self.state.question].answer)
-        self.category_form.question = question_opened.QuestionDialog(actual_category, self.state.question, self.port,
-                                                                     self.model, self.usbhost,
-                                                                     self.state.commands_answered, self.Timer)
+        self.category_form.question = question_opened.QuestionDialog(actual_category, self.state.question,self.model,
+                                                                     self.usbhost, self.state.commands_answered,
+                                                                     self.Timer)
         self.category_form.question.question_signal[int].connect(self.cmd_button_pressed)
         self.state.answer_signal[bool].connect(self.category_form.question.answer_processed)
         self.category_form.question.show()
@@ -417,6 +424,8 @@ class BrainRing(QtWidgets.QMainWindow, designmain.Ui_MainWindow):
         :return:
         """
         self.model.score_question(self.state.command, self.state.category.questions[self.state.question].points)
+        self.LblCommand.setStyleSheet("")
+        self.LblCommand.setText("Отвечает команда:")
         if self.state.question != len(self.state.category.questions) - 1:
             self.state.set_state(States.ANSWERED)
         else:
@@ -466,6 +475,8 @@ class BrainRing(QtWidgets.QMainWindow, designmain.Ui_MainWindow):
         :return:
         """
         self.set_color('color_idle')
+        self.LblCommand.setStyleSheet("")
+        self.LblCommand.setText("Отвечает команда:")
         self.BtnEnd.setEnabled(False)
         self.BtnNew.setEnabled(True)
         self.BtnNext.setEnabled(True)
@@ -480,6 +491,7 @@ class BrainRing(QtWidgets.QMainWindow, designmain.Ui_MainWindow):
         sets controls state when Question is continued after wrong answer
         :return:
         """
+        self.LblCommand.setStyleSheet("")
         self.LblCommand.setText("Отвечает команда:")
         self.set_question_state()
 
@@ -540,6 +552,21 @@ class BrainRing(QtWidgets.QMainWindow, designmain.Ui_MainWindow):
         self.BtnTimer.setEnabled(False)
         self.BtnFinish.setEnabled(False)
         self.BtnTest.setText("Тест начат")
+
+    def set_state_nocat(self):
+        """
+        sets control states to change category
+        :return:
+        """
+        self.set_color('color_idle')
+        self.BtnEnd.setEnabled(True)
+        self.BtnNew.setEnabled(False)
+        self.BtnNext.setEnabled(False)
+        self.BtnTrue.setEnabled(False)
+        self.BtnFalse.setEnabled(False)
+        self.BtnTimer.setEnabled(True)
+        self.BtnTest.setEnabled(True)
+        self.BtnFinish.setEnabled(False)
 
     def menu_settings_pressed(self):
         self.settings_form = settings.Settings(self.model, self.usbhost)
