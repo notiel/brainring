@@ -1,6 +1,7 @@
 import questiondata
 import category
 import question_opened
+import answer
 import commanddata
 import designmain
 import settings
@@ -58,6 +59,7 @@ class States(Enum):
     TIMER_STOPPED = 7
     TIMER_ENDED = 8
     TEST_BUTTON = 9
+    SHOW_ANSWER = 10
 
 
 class GameState(QtWidgets.QWidget):
@@ -180,12 +182,12 @@ class BrainRing(QtWidgets.QMainWindow, designmain.Ui_MainWindow):
         super().__init__()
         self.setupUi(self)
         self.game = None
-        self.category_form = None
-        self.settings_form = None
-        self.scoretable = None
-        self.usbhost = usbhost.UsbHost()
-        self.bets = bets_data.CurrentBets()
-        self.bets_form = None
+        self.category_form: Optional[category.CategoryForm] = None
+        self.settings_form: Optional[settings.Settings] = None
+        self.scoretable: Optional[show_table.CommandCount] = None
+        self.usbhost: Optional[usbhost.UsbHost] = usbhost.UsbHost()
+        self.bets: Optional[bets_data.CurrentBets] = bets_data.CurrentBets()
+        self.bets_form: Optional[bets.BetsDialog] = None
         if MOCKED:
             import mock
             mock.amock_init()
@@ -485,6 +487,7 @@ class BrainRing(QtWidgets.QMainWindow, designmain.Ui_MainWindow):
         self.BtnTimer.setEnabled(True)
         self.BtnTest.setEnabled(True)
         self.BtnFinish.setEnabled(True)
+        self.show_answer()
 
     def set_state_continue(self):
         """
@@ -538,6 +541,7 @@ class BrainRing(QtWidgets.QMainWindow, designmain.Ui_MainWindow):
         self.BtnTimer.setEnabled(True)
         self.BtnTest.setEnabled(True)
         self.BtnFinish.setEnabled(True)
+        self.show_answer()
 
     def set_state_testbutton(self):
         """
@@ -572,6 +576,18 @@ class BrainRing(QtWidgets.QMainWindow, designmain.Ui_MainWindow):
         self.settings_form = settings.Settings(self.model, self.usbhost)
         self.settings_form.show()
         self.settings_form.timer_signal[int].connect(self.timer_changed)
+
+    def show_answer(self):
+        """
+        shows question answer if needed
+        :return:
+        """
+        current_question = self.state.category.questions[self.state.question]
+        if current_question.show_answer:
+            self.category_form.answer = answer.AnswerDialog(current_question.answer, current_question.answer_filepath)
+            self.category_form.answer.show()
+            if self.category_form.answer.image:
+                self.category_form.answer.image.show()
 
     def timer_changed(self, value: int):
         """

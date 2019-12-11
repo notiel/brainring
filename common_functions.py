@@ -1,4 +1,4 @@
-from PyQt5 import QtWidgets
+from PyQt5 import QtWidgets, QtGui, QtCore
 from typing import Optional, List
 import re
 state_color_dict = {'color_idle': (255, 200, 0),
@@ -10,6 +10,20 @@ wrong_answers = ['Bad data', "Unknown command", "No device port", 'Port error']
 answer_translate = {'Bad data': "Неверные данные", "Unknown command": 'Неизвестная команда',
                     "No device port": "Устройство не подключено", "Port error": "Ошибка порта"}
 font_sizes = {10: 72, 50: 60, 100: 48, 200: 36, 250: 30, 500: 24}
+
+
+class ImageShow(QtWidgets.QWidget):
+    def __init__(self, filepath: str):
+        super().__init__()
+        self.setWindowTitle(" ")
+        layout = QtWidgets.QVBoxLayout(self)
+        self.imageLabel = QtWidgets.QLabel("No image")
+        self.imageLabel.setScaledContents(True)
+        layout.addWidget(self.imageLabel)
+        pixmap = QtGui.QPixmap()
+        pixmap.load(filepath)
+        pixmap_resized = pixmap.scaled(1024, 768, QtCore.Qt.KeepAspectRatio, QtCore.Qt.FastTransformation)
+        self.imageLabel.setPixmap(pixmap_resized)
 
 
 def error_message(text):

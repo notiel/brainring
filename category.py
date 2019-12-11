@@ -12,7 +12,8 @@ class CategoryForm(QtWidgets.QWidget):
     def __init__(self, game: questiondata.Game):
         super().__init__()
         self.game: questiondata.Game = game
-        # self.question = None
+        self.question = None
+        self.answer = None
         self.stub = None
         self.buttons: List[QtWidgets.QPushButton] = list()
         self.setup_ui()

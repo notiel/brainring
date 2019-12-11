@@ -40,7 +40,7 @@ class QuestionDialog(QtWidgets.QWidget, question.Ui_Form):
         filepath: str = current_question.filepath.lower()
         if filepath:
             if os.path.exists(filepath) and (filepath.endswith(".jpg") or filepath.endswith('.png')):
-                self.image = ImageShow(filepath)
+                self.image = common_functions.ImageShow(filepath)
             elif os.path.exists(filepath) and filepath.endswith('.mp3'):
                 os.system(r"start %s" % filepath)
             else:
@@ -96,14 +96,4 @@ class QuestionDialog(QtWidgets.QWidget, question.Ui_Form):
         event.accept()
 
 
-class ImageShow(QtWidgets.QWidget):
-    def __init__(self, filepath: str):
-        super().__init__()
-        self.setWindowTitle(" ")
-        layout = QtWidgets.QVBoxLayout(self)
-        self.imageLabel = QtWidgets.QLabel("No image")
-        self.imageLabel.setScaledContents(True)
-        layout.addWidget(self.imageLabel)
-        pixmap = QtGui.QPixmap()
-        pixmap.load(filepath)
-        self.imageLabel.setPixmap(pixmap)
+

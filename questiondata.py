@@ -54,7 +54,9 @@ class Question:
     points: int
     number: int
     answer: str
+    show_answer: bool = False
     filepath: str = ""
+    answer_filepath: str = ""
 
 
 def create_game(filename: str) -> Tuple[Optional[Game], str]:
@@ -78,8 +80,10 @@ def create_game(filename: str) -> Tuple[Optional[Game], str]:
             text = sheet['D%i' % i].value if sheet['D%i' % i].value else ""
             filepath = sheet['E%i' % i].value if sheet['E%i' % i].value else ""
             answer = sheet['F%i' % i].value
+            show_answer = True if sheet['G%i' % i].value and sheet['G%i' % i].value.strip().lower() == 'да' else False
+            answer_filepath = sheet['H%i' % i].value if sheet['H%i' % i].value else ""
             question = Question(category=category, description=text, points=points, number=number, answer=answer,
-                                filepath=filepath)
+                                filepath=filepath, show_answer=show_answer, answer_filepath=answer_filepath)
             existing_category = game.get_category_by_name(category)
             if existing_category:
                 existing_category.questions.append(question)
@@ -88,6 +92,6 @@ def create_game(filename: str) -> Tuple[Optional[Game], str]:
                 game.categories.append(new_category)
                 game.length += 1
 
-        except (AttributeError, TypeError, ValueError):
+        except (AttributeError, TypeError, ValueError) as e:
             error += "Wrong %i row\n" % i
     return game, error

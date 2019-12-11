@@ -74,6 +74,8 @@ class UsbHost:
                     return comport
             except (serial.SerialException, Exception):
                 continue
+        self.comport = ""
+        self.close_port()
         return None
 
     @staticmethod
@@ -136,8 +138,9 @@ class UsbHost:
         """
         try:
             self.ser.close()
+            self.ser = None
         except AttributeError:
-            raise
+            pass
 
     @staticmethod
     def create_command(command: str, *parameters) -> str:
