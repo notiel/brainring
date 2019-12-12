@@ -78,7 +78,7 @@ def get_first_button_from_answer(answer: str, used_buttons: List[str]) -> Option
     return None
 
 
-def update_button_list(usbhost, buttons: List[int])->str:
+def update_button_list(usbhost, buttons: List[int]) -> str:
     """
     updates button list for host
     :param usbhost: serial port with host

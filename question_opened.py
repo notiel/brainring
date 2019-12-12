@@ -1,5 +1,5 @@
 import question
-from PyQt5 import QtWidgets, QtCore, QtGui
+from PyQt5 import QtWidgets, QtCore
 import questiondata
 import common_functions
 import os
@@ -86,6 +86,8 @@ class QuestionDialog(QtWidgets.QWidget, question.Ui_Form):
         :return:
         """
         if result:
+            if self.image:
+                self.image.destroy()
             self.destroy()
         else:
             self.BtnAnswer.setText("Отвечает команда...")
@@ -94,6 +96,3 @@ class QuestionDialog(QtWidgets.QWidget, question.Ui_Form):
         if self.image:
             self.image.destroy()
         event.accept()
-
-
-
