@@ -43,7 +43,12 @@ class CategoryForm(QtWidgets.QWidget):
                 x = 0
                 y += 1
             self.buttons.append(btn)
-        self.resize(280 * maxx + 10, 110 * maxy + 10)
+        w: int = 280 * maxx + 10
+        h: int = 110 * maxy + 10
+        current_screen = 1 if QtWidgets.QDesktopWidget().screenCount() > 1 else 0
+        screen_res = QtWidgets.QDesktopWidget().availableGeometry(current_screen)
+        self.setGeometry(screen_res.x() + (screen_res.width() - w)/2, screen_res.y() + (screen_res.height() - h)/2,
+                         w, h)
 
     def btn_clicked(self):
         """

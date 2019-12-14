@@ -27,24 +27,24 @@
   </property>
   <widget class="QWidget" name="centralwidget">
    <layout class="QGridLayout" name="gridLayout">
-    <item row="7" column="1">
-     <widget class="QPushButton" name="BtnFinish">
+    <item row="9" column="4">
+     <widget class="QPushButton" name="BtnEnd">
       <property name="enabled">
        <bool>false</bool>
       </property>
       <property name="minimumSize">
        <size>
-        <width>250</width>
+        <width>0</width>
         <height>50</height>
        </size>
       </property>
       <property name="font">
        <font>
-        <pointsize>14</pointsize>
+        <pointsize>12</pointsize>
        </font>
       </property>
       <property name="text">
-       <string>Завершить вопрос</string>
+       <string>Новый раунд</string>
       </property>
      </widget>
     </item>
@@ -66,28 +66,7 @@
       </property>
      </widget>
     </item>
-    <item row="7" column="4">
-     <widget class="QPushButton" name="BtnEnd">
-      <property name="enabled">
-       <bool>false</bool>
-      </property>
-      <property name="minimumSize">
-       <size>
-        <width>0</width>
-        <height>50</height>
-       </size>
-      </property>
-      <property name="font">
-       <font>
-        <pointsize>12</pointsize>
-       </font>
-      </property>
-      <property name="text">
-       <string>Новый раунд</string>
-      </property>
-     </widget>
-    </item>
-    <item row="6" column="0">
+    <item row="8" column="0">
      <widget class="QPushButton" name="BtnTrue">
       <property name="enabled">
        <bool>false</bool>
@@ -111,7 +90,7 @@
       </property>
      </widget>
     </item>
-    <item row="7" column="0">
+    <item row="9" column="0">
      <widget class="QPushButton" name="BtnNew">
       <property name="enabled">
        <bool>false</bool>
@@ -132,7 +111,58 @@
       </property>
      </widget>
     </item>
-    <item row="6" column="1">
+    <item row="9" column="1">
+     <widget class="QPushButton" name="BtnFinish">
+      <property name="enabled">
+       <bool>false</bool>
+      </property>
+      <property name="minimumSize">
+       <size>
+        <width>250</width>
+        <height>50</height>
+       </size>
+      </property>
+      <property name="font">
+       <font>
+        <pointsize>14</pointsize>
+       </font>
+      </property>
+      <property name="text">
+       <string>Завершить вопрос</string>
+      </property>
+     </widget>
+    </item>
+    <item row="8" column="4">
+     <widget class="QPushButton" name="BtnTest">
+      <property name="minimumSize">
+       <size>
+        <width>0</width>
+        <height>50</height>
+       </size>
+      </property>
+      <property name="font">
+       <font>
+        <pointsize>14</pointsize>
+       </font>
+      </property>
+      <property name="text">
+       <string>Тест кнопок</string>
+      </property>
+     </widget>
+    </item>
+    <item row="7" column="2">
+     <widget class="QLabel" name="LblTmr">
+      <property name="font">
+       <font>
+        <pointsize>12</pointsize>
+       </font>
+      </property>
+      <property name="text">
+       <string>Оставшееся время:</string>
+      </property>
+     </widget>
+    </item>
+    <item row="8" column="1">
      <widget class="QPushButton" name="BtnFalse">
       <property name="enabled">
        <bool>false</bool>
@@ -156,28 +186,7 @@
       </property>
      </widget>
     </item>
-    <item row="6" column="3">
-     <widget class="QPushButton" name="BtnNext">
-      <property name="enabled">
-       <bool>false</bool>
-      </property>
-      <property name="minimumSize">
-       <size>
-        <width>0</width>
-        <height>50</height>
-       </size>
-      </property>
-      <property name="font">
-       <font>
-        <pointsize>14</pointsize>
-       </font>
-      </property>
-      <property name="text">
-       <string>Далее</string>
-      </property>
-     </widget>
-    </item>
-    <item row="5" column="0" colspan="2">
+    <item row="7" column="0" colspan="2">
      <widget class="QLabel" name="LblCommand">
       <property name="font">
        <font>
@@ -189,19 +198,7 @@
       </property>
      </widget>
     </item>
-    <item row="5" column="2">
-     <widget class="QLabel" name="LblTmr">
-      <property name="font">
-       <font>
-        <pointsize>12</pointsize>
-       </font>
-      </property>
-      <property name="text">
-       <string>Оставшееся время:</string>
-      </property>
-     </widget>
-    </item>
-    <item row="6" column="2" rowspan="4">
+    <item row="8" column="2" rowspan="4">
      <widget class="QLCDNumber" name="Timer">
       <property name="contextMenuPolicy">
        <enum>Qt::ActionsContextMenu</enum>
@@ -238,28 +235,10 @@
       </property>
      </widget>
     </item>
-    <item row="6" column="4">
-     <widget class="QPushButton" name="BtnTest">
-      <property name="minimumSize">
-       <size>
-        <width>0</width>
-        <height>50</height>
-       </size>
-      </property>
-      <property name="font">
-       <font>
-        <pointsize>14</pointsize>
-       </font>
-      </property>
-      <property name="text">
-       <string>Тест кнопок</string>
-      </property>
-     </widget>
-    </item>
-    <item row="7" column="3">
-     <widget class="QPushButton" name="BtnTimer">
+    <item row="8" column="3">
+     <widget class="QPushButton" name="BtnNext">
       <property name="enabled">
-       <bool>true</bool>
+       <bool>false</bool>
       </property>
       <property name="minimumSize">
        <size>
@@ -273,7 +252,7 @@
        </font>
       </property>
       <property name="text">
-       <string>Старт</string>
+       <string>Далее</string>
       </property>
      </widget>
     </item>
@@ -333,15 +312,24 @@ p, li { white-space: pre-wrap; }
       </property>
      </widget>
     </item>
-    <item row="4" column="0" colspan="3">
-     <widget class="QLabel" name="LblAnswer">
+    <item row="9" column="3">
+     <widget class="QPushButton" name="BtnTimer">
+      <property name="enabled">
+       <bool>true</bool>
+      </property>
+      <property name="minimumSize">
+       <size>
+        <width>0</width>
+        <height>50</height>
+       </size>
+      </property>
       <property name="font">
        <font>
-        <pointsize>12</pointsize>
+        <pointsize>14</pointsize>
        </font>
       </property>
       <property name="text">
-       <string>Ответ: </string>
+       <string>Старт</string>
       </property>
      </widget>
     </item>
@@ -366,6 +354,28 @@ p, li { white-space: pre-wrap; }
       </property>
       <property name="text">
        <string>Тема не выбрана</string>
+      </property>
+     </widget>
+    </item>
+    <item row="4" column="0">
+     <widget class="QPushButton" name="BtnMusic">
+      <property name="enabled">
+       <bool>false</bool>
+      </property>
+      <property name="text">
+       <string>Проиграть звук</string>
+      </property>
+     </widget>
+    </item>
+    <item row="5" column="0" colspan="3">
+     <widget class="QLabel" name="LblAnswer">
+      <property name="font">
+       <font>
+        <pointsize>12</pointsize>
+       </font>
+      </property>
+      <property name="text">
+       <string>Ответ: </string>
       </property>
      </widget>
     </item>

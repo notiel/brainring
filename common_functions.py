@@ -9,7 +9,7 @@ pause_ms = 500
 wrong_answers = ['Bad data', "Unknown command", "No device port", 'Port error']
 answer_translate = {'Bad data': "Неверные данные", "Unknown command": 'Неизвестная команда',
                     "No device port": "Устройство не подключено", "Port error": "Ошибка порта"}
-font_sizes = {10: 72, 50: 60, 100: 48, 200: 36, 250: 30, 500: 24}
+font_sizes = {10: 50, 50: 50, 100: 48, 200: 36, 250: 30, 500: 24}
 
 
 class ImageShow(QtWidgets.QWidget):
@@ -22,8 +22,22 @@ class ImageShow(QtWidgets.QWidget):
         layout.addWidget(self.imageLabel)
         pixmap = QtGui.QPixmap()
         pixmap.load(filepath)
-        pixmap_resized = pixmap.scaled(1024, 768, QtCore.Qt.KeepAspectRatio, QtCore.Qt.FastTransformation)
+        current_screen = 1 if QtWidgets.QDesktopWidget().screenCount() > 1 else 0
+        screen_res = QtWidgets.QDesktopWidget().availableGeometry(current_screen)
+        used_height = screen_res.height() - 80
+        pixmap_resized = pixmap.scaledToHeight(2*used_height/3 - 20)
         self.imageLabel.setPixmap(pixmap_resized)
+        self.setGeometry(screen_res.x() + 5, screen_res.y() + used_height / 3 + 20, screen_res.width() - 10,
+                         2 * used_height / 3 - 20)
+        print(screen_res.width() - 10)
+        print(2 * used_height / 3 - 20)
+
+
+def resize_to_third(window):
+    """"""
+    current_screen = 1 if QtWidgets.QDesktopWidget().screenCount() > 1 else 0
+    screen_res = QtWidgets.QDesktopWidget().availableGeometry(current_screen)
+    window.setGeometry(screen_res.x() + 5, screen_res.y() + 40, screen_res.width() - 10, screen_res.height() / 3 - 40)
 
 
 def error_message(text):

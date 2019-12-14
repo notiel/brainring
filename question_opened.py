@@ -19,6 +19,8 @@ class QuestionDialog(QtWidgets.QWidget, question.Ui_Form):
         self.usbhost = my_usbhost
         self.used_buttons = used_buttons
         self.image = None
+        self.media = False
+        self.mediapath = ""
 
         self.timer = QtCore.QTimer()
         self.timer.timeout.connect(self.timerEvent)
@@ -28,9 +30,10 @@ class QuestionDialog(QtWidgets.QWidget, question.Ui_Form):
         self.parentTimer = timer
         self.LCDTimer.display(self.parentTimer.intValue())
 
-        self.open_port()
-
     def init_ui(self, category: questiondata.Category, number):
+        current_screen = 1 if QtWidgets.QDesktopWidget().screenCount() > 1 else 0
+        screen_res = QtWidgets.QDesktopWidget().availableGeometry(current_screen)
+        self.setGeometry(screen_res.x()+5, screen_res.y() + 40, screen_res.width() - 10, screen_res.height() - 40)
         current_question: questiondata.Question = category.questions[number]
         self.LblPoints.setText("Стоимость вопроса: %i" % current_question.points)
         self.LblCategory.setText("Категория: %s" % category.name)
@@ -42,9 +45,12 @@ class QuestionDialog(QtWidgets.QWidget, question.Ui_Form):
             if os.path.exists(filepath) and (filepath.endswith(".jpg") or filepath.endswith('.png')):
                 self.image = common_functions.ImageShow(filepath)
             elif os.path.exists(filepath) and filepath.endswith('.mp3'):
-                os.system(r"start %s" % filepath)
+                self.media = True
+                self.mediapath = filepath
             else:
-                common_functions.error_message("Файла с медиаконтентом не существует или формат неверный")
+                self.media = True
+                self.mediapath = ""
+        self.open_port()
 
     def open_port(self):
         """
@@ -63,21 +69,22 @@ class QuestionDialog(QtWidgets.QWidget, question.Ui_Form):
         decreases timer every second and scans buttons if scanning mode enables
         :return:
         """
-        current = self.parentTimer.intValue()
-        if current > 0:
-            self.LCDTimer.display(current)
-            if current == questiondata.time_low_threshold:
-                self.LCDTimer.setStyleSheet("color: red")
-        if self.scanning:
-            button: int = common_functions.get_first_button(self.usbhost, "answer", self.used_buttons)
-            if button:
-                commands = self.model.commanddata
-                self.BtnAnswer.setText("Отвечает команда «%s»" %
-                                       commands.commands[commands.get_command_by_button(button)].name)
-                self.BtnAnswer.setStyleSheet("color: red")
-                self.scanning = False
-                self.usbhost.close_port()
-                self.question_signal.emit(button)
+        if hasattr(self, 'parentTimer'):
+            current = self.parentTimer.intValue()
+            if current > 0:
+                self.LCDTimer.display(current)
+                if current == questiondata.time_low_threshold:
+                    self.LCDTimer.setStyleSheet("color: red")
+            if self.scanning:
+                button: int = common_functions.get_first_button(self.usbhost, "answer", self.used_buttons)
+                if button:
+                    commands = self.model.commanddata
+                    self.BtnAnswer.setText("Отвечает команда «%s»" %
+                                           commands.commands[commands.get_command_by_button(button)].name)
+                    self.BtnAnswer.setStyleSheet("color: red")
+                    self.scanning = False
+                    self.usbhost.close_port()
+                    self.question_signal.emit(button)
 
     def answer_processed(self, result):
         """

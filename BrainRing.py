@@ -217,6 +217,7 @@ class BrainRing(QtWidgets.QMainWindow, designmain.Ui_MainWindow):
         self.BtnTrue.clicked.connect(self.btn_true_pressed)
         self.BtnFalse.clicked.connect(self.btn_false_pressed)
         self.BtnFinish.clicked.connect(self.btn_end_pressed)
+        self.BtnMusic.clicked.connect(self.music_pressed)
 
         self.model: commanddata.CommandTableModel = commanddata.CommandTableModel()
         self.TblCmnd.setModel(self.model)
@@ -374,6 +375,7 @@ class BrainRing(QtWidgets.QMainWindow, designmain.Ui_MainWindow):
         self.BtnNext.setEnabled(True)
         self.BtnTimer.setEnabled(True)
         self.BtnFinish.setEnabled(False)
+        self.BtnMusic.setEnabled(False)
         self.LblDscr.setText("Категория: " + self.state.category.name)
         self.TxtQstn.clear()
         self.LblAnswer.clear()
@@ -406,9 +408,23 @@ class BrainRing(QtWidgets.QMainWindow, designmain.Ui_MainWindow):
                                                                      self.Timer)
         self.category_form.question.question_signal[int].connect(self.cmd_button_pressed)
         self.state.answer_signal[bool].connect(self.category_form.question.answer_processed)
-        self.category_form.question.show()
         if self.category_form.question.image:
+            common_functions.resize_to_third(self.category_form.question)
             self.category_form.question.image.show()
+        if self.category_form.question.media:
+            if self.category_form.question.mediapath:
+                self.BtnMusic.setEnabled(True)
+                os.system(r"start %s" % self.category_form.question.mediapath)
+            else:
+                common_functions.error_message("Файла с медиаконтентом не существует или формат неверный")
+        self.category_form.question.show()
+
+    def music_pressed(self):
+        """
+        play music content
+        :return:
+        """
+        os.system(r"start %s" % self.category_form.question.mediapath)
 
     def cmd_button_pressed(self, button):
         """
@@ -487,6 +503,7 @@ class BrainRing(QtWidgets.QMainWindow, designmain.Ui_MainWindow):
         self.BtnTimer.setEnabled(True)
         self.BtnTest.setEnabled(True)
         self.BtnFinish.setEnabled(True)
+        self.BtnMusic.setEnabled(False)
         self.show_answer()
 
     def set_state_continue(self):
@@ -571,6 +588,7 @@ class BrainRing(QtWidgets.QMainWindow, designmain.Ui_MainWindow):
         self.BtnTimer.setEnabled(True)
         self.BtnTest.setEnabled(True)
         self.BtnFinish.setEnabled(False)
+        self.BtnMusic.setEnabled(False)
 
     def menu_settings_pressed(self):
         self.settings_form = settings.Settings(self.model, self.usbhost)
@@ -585,9 +603,13 @@ class BrainRing(QtWidgets.QMainWindow, designmain.Ui_MainWindow):
         current_question = self.state.category.questions[self.state.question]
         if current_question.show_answer:
             self.category_form.answer = answer.AnswerDialog(current_question.answer, current_question.answer_filepath)
-            self.category_form.answer.show()
             if self.category_form.answer.image:
+                common_functions.resize_to_third(self.category_form.answer)
                 self.category_form.answer.image.show()
+            elif self.category_form.answer.media:
+                if self.category_form.answer.mediapath:
+                    os.system(r"start %s" % self.category_form.answer.mediapath)
+            self.category_form.answer.show()
 
     def timer_changed(self, value: int):
         """
@@ -623,7 +645,13 @@ class BrainRing(QtWidgets.QMainWindow, designmain.Ui_MainWindow):
         if self.category_form:
             if self.category_form.question:
                 self.category_form.question.close()
+            if self.category_form.answer:
+                self.category_form.answer.close()
             self.category_form.close()
+        if self.bets_form:
+            self.bets_form.close()
+        if self.settings_form:
+            self.settings_form.close()
         if self.bets_form:
             self.bets_form.close()
         event.accept()

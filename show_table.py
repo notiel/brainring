@@ -25,6 +25,9 @@ class CommandCount(QtWidgets.QWidget, commandtable_ui.Ui_Form):
             self.SpinList[model.commanddata.commands.index(cmd)].setEnabled(True if cmd.available else False)
             self.SpinList[model.commanddata.commands.index(cmd)].setMaximum(cmd.points)
         self.BtnDecrease.clicked.connect(self.decrease_clicked)
+        current_screen = 1 if QtWidgets.QDesktopWidget().screenCount() > 1 else 0
+        screen_res = QtWidgets.QDesktopWidget().availableGeometry(current_screen)
+        self.setGeometry(screen_res.x() + 5 + screen_res.width()/2 - 500, screen_res.y() + 40, 1000, screen_res.height() - 40)
 
     def decrease_clicked(self):
         """
