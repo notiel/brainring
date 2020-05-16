@@ -78,7 +78,7 @@ def create_game(filename: str) -> Tuple[Optional[Game], str]:
     current_category = None
     for i in range(2, sheet.max_row + 1):
         try:
-            category = sheet['A%i' % i].value if sheet['A%i' % i] and sheet['A%i' % i].value else ""
+            category = sheet['A%i' % i].value.lower() if sheet['A%i' % i] and sheet['A%i' % i].value else ""
             number = int(sheet['B%i' % i].value) if sheet['B%i' % i] and sheet['B%i' % i].value else -1
             points = int(sheet['C%i' % i].value) if sheet['C%i' % i] and sheet['C%i' % i].value else -1
             text = sheet['D%i' % i].value if sheet['D%i' % i] and sheet['D%i' % i].value else ""
@@ -91,7 +91,7 @@ def create_game(filename: str) -> Tuple[Optional[Game], str]:
                 existing_category = game.get_category_by_name(category)
                 if not existing_category:
                     # noinspection PyArgumentList
-                    existing_category = Category(name=category, questions=list(), was_used=False, media_path="")
+                    existing_category = Category(name=category.lower(), questions=list(), was_used=False, media_path="")
                     game.categories.append(existing_category)
                     game.length += 1
                 current_category = existing_category
@@ -100,7 +100,7 @@ def create_game(filename: str) -> Tuple[Optional[Game], str]:
                     if number == -1:
                         number = len(current_category.questions) + 1
                     # noinspection PyArgumentList
-                    question = Question(category=category, description=text, points=points, number=number,
+                    question = Question(category=category.lower(), description=text, points=points, number=number,
                                         answer=answer, filepath=filepath, show_answer=show_answer,
                                         answer_filepath=answer_filepath)
                     current_category.questions.append(question)
