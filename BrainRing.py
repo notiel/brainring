@@ -293,9 +293,13 @@ class BrainRing(QtWidgets.QMainWindow, designmain.Ui_MainWindow):
             self.scoretable = show_table.CommandCount(self.model)
             self.scoretable.show()
             self.state.set_state(States.NO_CAT)
+        elif self.state.state == States.CAT_SELECTED and not self.state.category.questions:
+            self.BtnFinish.setEnabled(False)
+            self.state.set_state(States.NO_CAT)
         else:
             self.category_form.stub.setVisible(False)
-            self.state.set_state(States.QUEST_SELECTED)
+            if self.state.category.questions:
+                self.state.set_state(States.QUEST_SELECTED)
 
     def close_question(self):
         """

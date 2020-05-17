@@ -91,7 +91,8 @@ def create_game(filename: str) -> Tuple[Optional[Game], str]:
                 existing_category = game.get_category_by_name(category)
                 if not existing_category:
                     # noinspection PyArgumentList
-                    existing_category = Category(name=category.lower(), questions=list(), was_used=False, media_path="")
+                    existing_category = Category(name=category.lower(), questions=list(), was_used=False,
+                                                 media_path=filepath)
                     game.categories.append(existing_category)
                     game.length += 1
                 current_category = existing_category
