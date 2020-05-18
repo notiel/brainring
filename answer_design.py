@@ -11,7 +11,7 @@ from PyQt5 import QtCore, QtGui, QtWidgets
 class Ui_Form(object):
     def setupUi(self, Form):
         Form.setObjectName("Form")
-        Form.resize(1215, 210)
+        Form.resize(1215, 225)
         self.gridLayout = QtWidgets.QGridLayout(Form)
         self.gridLayout.setObjectName("gridLayout")
         self.LblHeader = QtWidgets.QLabel(Form)
@@ -28,6 +28,10 @@ class Ui_Form(object):
         self.LblAnswer.setFont(font)
         self.LblAnswer.setObjectName("LblAnswer")
         self.gridLayout.addWidget(self.LblAnswer, 1, 0, 1, 2, QtCore.Qt.AlignHCenter)
+        self.LblPicture = QtWidgets.QLabel(Form)
+        self.LblPicture.setText("")
+        self.LblPicture.setObjectName("LblPicture")
+        self.gridLayout.addWidget(self.LblPicture, 2, 0, 1, 2, QtCore.Qt.AlignHCenter)
 
         self.retranslateUi(Form)
         QtCore.QMetaObject.connectSlotsByName(Form)

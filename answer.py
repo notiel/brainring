@@ -1,6 +1,5 @@
 import answer_design
-from PyQt5 import QtWidgets
-import common_functions
+from PyQt5 import QtWidgets, QtGui, QtCore
 import os
 
 
@@ -15,10 +14,19 @@ class AnswerDialog(QtWidgets.QWidget, answer_design.Ui_Form):
         self.mediapath = ""
         current_screen = 1 if QtWidgets.QDesktopWidget().screenCount() > 1 else 0
         screen_res = QtWidgets.QDesktopWidget().availableGeometry(current_screen)
-        self.setGeometry(screen_res.x() + 20, screen_res.y() + 40, screen_res.width() - 20, screen_res.height() - 40)
+        self.setGeometry(screen_res.x() + 50, screen_res.y() + 50, screen_res.width()/4*3, screen_res.height() - 100)
         if filepath:
             if os.path.exists(filepath) and (filepath.endswith(".jpg") or filepath.endswith('.png')):
-                self.image = common_functions.ImageShow(filepath)
+                pixmap = QtGui.QPixmap()
+                pixmap.load(filepath)
+                self.LblPicture.setScaledContents(True)
+                image_height = 2 * (screen_res.height() - 100) / 3
+                image_wight = image_height * 4 / 3
+                self.LblPicture.setAlignment(QtCore.Qt.AlignCenter)
+                self.LblPicture.setPixmap(pixmap)
+                self.LblPicture.setFixedWidth(image_wight)
+                self.LblPicture.setFixedHeight(image_height)
+                self.LblPicture.setAlignment(QtCore.Qt.AlignCenter)
             elif os.path.exists(filepath) and filepath.endswith('.mp3'):
                 self.media = True
                 self.mediapath = filepath
