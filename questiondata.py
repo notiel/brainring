@@ -84,8 +84,7 @@ def create_game(filename: str) -> Tuple[Optional[Game], str]:
             text = sheet['D%i' % i].value if sheet['D%i' % i] and sheet['D%i' % i].value else ""
             filepath = sheet['E%i' % i].value if sheet['E%i' % i] and sheet['E%i' % i].value else ""
             answer = sheet['F%i' % i].value if sheet['F%i' % i] and sheet['F%i' % i].value else ""
-            show_answer = True if sheet['G%i' % i] and sheet['G%i' % i].value and \
-                                  sheet['G%i' % i].value.strip().lower() == 'да' else False
+            show_answer = True if not sheet['G%i' % i] or not sheet['G%i' % i].value else False
             answer_filepath = sheet['H%i' % i].value if sheet['H%i' % i] and sheet['H%i' % i].value else ""
             if category:
                 existing_category = game.get_category_by_name(category)

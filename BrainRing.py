@@ -30,6 +30,7 @@ def setup_exception_logging():
     # Back up the reference to the exceptionhook
     sys._excepthook = sys.excepthook
 
+    # noinspection PyUnresolvedReferences,PyProtectedMember
     def my_exception_hook(exctype, value, traceback):
         # Print the error and traceback
         logger.exception(f"{exctype}, {value}, {traceback}")
@@ -43,6 +44,7 @@ def setup_exception_logging():
 
 def resource_path(relative):
     if hasattr(sys, '_MEIPASS'):
+        # noinspection PyProtectedMember
         return os.path.join(sys._MEIPASS, relative)
     else:
         return os.path.join(os.path.abspath("."), relative)
@@ -221,8 +223,9 @@ class BrainRing(QtWidgets.QMainWindow, designmain.Ui_MainWindow):
 
         self.model: commanddata.CommandTableModel = commanddata.CommandTableModel()
         self.TblCmnd.setModel(self.model)
-
         self.Timer.display(questiondata.question_time)
+
+        self.test_used_buttons: List[int] = list()
 
     def menu_open_pressed(self):
         openfilename = QtWidgets.QFileDialog.getOpenFileName(self, 'Выберите игру', "")[0]
@@ -325,7 +328,8 @@ class BrainRing(QtWidgets.QMainWindow, designmain.Ui_MainWindow):
         """
         if self.state.state == States.TEST_BUTTON:
             if self.usbhost.send_command("RstTmr") == 'Ok':
-                button = common_functions.get_first_button(self.usbhost, 'idle', list())
+                button = common_functions.get_first_button(self.usbhost, 'idle', self.test_used_buttons)
+                self.test_used_buttons.append(button)
                 if button and button != -1:
                     self.usbhost.send_command("RstTmr")
                     command_name = \
@@ -407,7 +411,7 @@ class BrainRing(QtWidgets.QMainWindow, designmain.Ui_MainWindow):
         self.TxtQstn.setHtml(common_functions.get_question_text
                              (actual_category.questions[self.state.question].description))
         self.LblAnswer.setText(actual_category.questions[self.state.question].answer)
-        self.category_form.question = question_opened.QuestionDialog(actual_category, self.state.question,self.model,
+        self.category_form.question = question_opened.QuestionDialog(actual_category, self.state.question, self.model,
                                                                      self.usbhost, self.state.commands_answered,
                                                                      self.Timer)
         self.category_form.question.question_signal[int].connect(self.cmd_button_pressed)
@@ -569,6 +573,7 @@ class BrainRing(QtWidgets.QMainWindow, designmain.Ui_MainWindow):
         sets control states to test button mode
         :return:
         """
+        self.test_used_buttons = list()
         self.BtnEnd.setEnabled(False)
         self.BtnNew.setEnabled(False)
         self.BtnNext.setEnabled(False)

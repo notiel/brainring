@@ -52,7 +52,7 @@ class QuestionDialog(QtWidgets.QWidget, question.Ui_Form):
                 self.LblPicture.setFixedWidth(image_wight)
                 self.LblPicture.setFixedHeight(image_height)
                 self.LblPicture.setAlignment(QtCore.Qt.AlignCenter)
-            elif os.path.exists(filepath) and filepath.endswith('.mp3'):
+            elif os.path.exists(filepath) and (filepath.endswith('.mp3') or filepath.endswith('.wav')):
                 self.media = True
                 self.mediapath = filepath
             else:
@@ -106,6 +106,7 @@ class QuestionDialog(QtWidgets.QWidget, question.Ui_Form):
             self.destroy()
         else:
             self.BtnAnswer.setText("Отвечает команда...")
+            self.open_port()
 
     def closeEvent(self, event):
         if self.image:

@@ -1,4 +1,4 @@
-from PyQt5 import QtWidgets, QtGui, QtCore
+from PyQt5 import QtWidgets, QtGui
 from typing import Optional, List
 import re
 state_color_dict = {'color_idle': (255, 200, 0),
@@ -54,7 +54,7 @@ def error_message(text):
     error.exec_()
 
 
-def get_first_button(usbhost, state: str, used_buttons: List[str]) -> Optional[int]:
+def get_first_button(usbhost, state: str, used_buttons: List[int]) -> Optional[int]:
     """
     asks comport about buttons pressed
     :param used_buttons: list of already used buttons. we may not return them
@@ -74,7 +74,7 @@ def get_first_button(usbhost, state: str, used_buttons: List[str]) -> Optional[i
     return btn
 
 
-def get_first_button_from_answer(answer: str, used_buttons: List[str]) -> Optional[int]:
+def get_first_button_from_answer(answer: str, used_buttons: List[int]) -> Optional[int]:
     """
 
     :param answer: string with answer from radio
